@@ -7,20 +7,8 @@ var pg = require('pg').native;
 var connectionString = process.env.DATABASE_URL || 'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
 var client, query;
 client = new pg.Client(connectionString);
+console.log(connectionString);
 client.connect();
-
-//query = client.query('CREATE TABLE junk (name varchar(10), idk varchar(10))');
-//query = client.query("INSERT INTO junk(name, idk) values('Ted', 'lolol')");
-//query = client.query('SELECT * FROM junk');
-
-/*query.on('row', function(row) {
-	console.log("name: " + row.name);
-	console.log("idk: " + row.idk);
-});
-query.on('end', function() {
-	client.end();
-});*/
-//console.log(client);
 
 // create an express webserver
 var app = express.createServer(express.logger(), express.static(__dirname + '/public'), express.bodyParser(), express.cookieParser(),
@@ -129,10 +117,8 @@ app.get('/insert', function(req, res) {
 });
 
 app.get('/select', function(req, res) {
-	console.log('select sent');
 	var query = client.query("SELECT * FROM junk");
 	query.on('row', function(row) {
-		console.log('select completed');
 		res.send(row);
 	});
 });
