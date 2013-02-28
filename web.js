@@ -3,12 +3,18 @@ var express = require('express');
 var util = require('util');
 
 // TODO database connection
-var pg = require('pg').native;
-var connectionString = process.env.DATABASE_URL || 'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
+/*var pg = require('pg').native;
+var connectionString = process.env.DATABASE_URL || 'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com:5432/d35bo6oug912uf';
 var client, query;
+/*client = new pg.Client({
+	host : 'ec2-54-243-242-213.compute-1.amazonaws.com',
+	user : 'btqkctxdnitkrq',
+	password : 'vZWExA6HeLbxst7MHzLGf9nBVA',
+	database : 'd35bo6oug912uf',
+	ssl : true
+});
 client = new pg.Client(connectionString);
-console.log(connectionString);
-client.connect();
+client.connect();*/
 
 // create an express webserver
 var app = express.createServer(express.logger(), express.static(__dirname + '/public'), express.bodyParser(), express.cookieParser(),
@@ -20,6 +26,7 @@ express.session({
 	secret : process.env.FACEBOOK_SECRET,
 	scope : 'user_likes,user_photos,user_photo_video_tags'
 }));
+//app.engine('.htm', require('jade'));
 
 // listen to the PORT given to us in the environment
 var port = process.env.PORT || 3000;
@@ -28,7 +35,7 @@ app.listen(port, function() {
 	console.log("Listening on " + port);
 });
 
-app.dynamicHelpers({
+/*app.dynamicHelpers({
 	'host' : function(req, res) {
 		return req.headers['host'];
 	},
@@ -109,7 +116,14 @@ function handle_facebook_request(req, res) {
 }
 
 app.get('/', handle_facebook_request);
-app.post('/', handle_facebook_request);
+app.post('/', handle_facebook_request);*/
+
+function handle_request(req, res) {
+	res.redirect('/index.htm');
+}
+
+app.get('/', handle_request);
+app.post('/', handle_request);
 
 app.get('/insert', function(req, res) {
 	client.query("INSERT INTO junk(name, idk) values('Ted', 'lolol')");
@@ -121,4 +135,4 @@ app.get('/select', function(req, res) {
 	query.on('row', function(row) {
 		res.send(row);
 	});
-});
+}); 
