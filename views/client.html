@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<title>Musicka</title>
 		
 		<meta name="viewport" content="user-scalable = no, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0" />
-		<!-- Stylesheet -->
+		<!-- Stylesheets -->
 		<link rel="stylesheet" type="text/css" href="stylesheets/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="stylesheets/bootstrap-responsive.css">
 		<!-- Imports -->
@@ -21,20 +21,37 @@
 	</head>
 	
 	<body>
-		<div class="container">
-			<div class="hero-unit">
-				<h1>Musicka</h1>
+		<div class="container-fluid">
+			
+			<div class="page-header">
+				<h1>Musicka<small> Social Music Recommender</small></h1>
 			</div>
-			Add YouTube Song: <input id="songUrlField" type="text" value="">
-			<button id="addSongBtn">Add</button><br/>
 			
-			<table id="playList">
-				<th>Title</th>
-				<th>Rating</th>
-			</table><br/>
+			<label><small>Add YouTube song to playlist</small></label>
+			<div class="row-fluid">
+				<div class="input-append">
+					<input class="span4" id="songUrlField" type="text" placeholder="Enter YouTube URL here..." value="">
+					<button class="btn btn-primary" id="addSongBtn">Add</button>
+				</div>
+			</div>
 			
-			<div id="ytapiplayer">
-				You need Flash player 8+ and JavaScript enabled to view this video.
+			<table class="table table-condensed table-bordered" id="playList">
+				<caption><strong>Your playlist</strong></caption>
+				<thead>
+					<th>Title</th>
+					<th>Rating</th>
+				</thead>
+				<tbody>
+					
+				</tbody>
+			</table>
+			
+			<div class="row-fluid">
+				<div class="span12">
+					<div id="ytapiplayer">
+						You need Flash player 8+ and JavaScript enabled to view this video.
+					</div>
+				</div>
 			</div>
 		</div>
 	</body>

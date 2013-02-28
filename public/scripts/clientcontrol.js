@@ -60,7 +60,7 @@ ClientControl.prototype._handleYTResponse = function(response) {
 			title.attr('onClick', 'return false;');
 			title.click({video: videoID}, this._onPlaySong.bind(this));
 			title = $('<td>').append(title);
-			var remove = $('<button>').html("Remove");
+			var remove = $('<button class=\"btn\">').html("Remove");
 			remove.click({video: videoID}, this._onRemoveSong.bind(this));
 			remove = $('<td>').append(remove);
 			var rating = $('<td>').html('0');
