@@ -4,7 +4,9 @@
 		<title>Musicka</title>
 		
 		<meta name="viewport" content="user-scalable = no, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0" />
-		
+		<!-- Stylesheet -->
+		<link rel="stylesheet" type="text/css" href="./bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="./bootstrap-responsive.css">
 		<!-- Imports -->
 		<script src="scripts/jquery.min.js"></script>
 		<script src="scripts/swfobject.js"></script>
@@ -19,16 +21,21 @@
 	</head>
 	
 	<body>
-		Add YouTube Song: <input id="songUrlField" type="text" value="">
-		<button id="addSongBtn">Add</button><br>
-		
-		<table id="playList">
-			<th>Title</th>
-			<th>Rating</th>
-		</table> <br>
-		
-		<div id="ytapiplayer">
-			You need Flash player 8+ and JavaScript enabled to view this video.
+		<div class="container">
+			<div class="hero-unit">
+				<h1>Musicka</h1>
+			</div>
+			Add YouTube Song: <input id="songUrlField" type="text" value="">
+			<button id="addSongBtn">Add</button><br/>
+			
+			<table id="playList">
+				<th>Title</th>
+				<th>Rating</th>
+			</table><br/>
+			
+			<div id="ytapiplayer">
+				You need Flash player 8+ and JavaScript enabled to view this video.
+			</div>
 		</div>
 	</body>
 </html>
