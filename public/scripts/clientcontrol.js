@@ -17,7 +17,7 @@ ClientControl.prototype.init = function() {
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
-	swfobject.embedSWF('http://www.youtube.com/v/Zhawgd0REhA?enablejsapi=1&playerapiid=ytplayer&version=3',
+	swfobject.embedSWF('//www.youtube.com/v/Zhawgd0REhA?enablejsapi=1&playerapiid=ytplayer&version=3',
 		MUSICKA.Element.YT_PLAYER_ID, '425', '356', '8', null, null, params, atts);
 	
 	// Load element functions

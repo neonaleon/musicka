@@ -9,6 +9,6 @@ var MUSICKA = {
 	
 	Properties : {
 		YTPLAYER	: "mytplayer",
-		YTPATH		: "http://gdata.youtube.com/",
+		YTPATH		: "//gdata.youtube.com/",
 	},
 };

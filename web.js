@@ -6,8 +6,8 @@ var app = express.createServer(express.logger(), express.static(__dirname + '/pu
 express.session({
 	secret : process.env.SESSION_SECRET || 'secret123'
 }), require('faceplate').middleware({
-	app_id : process.env.FACEBOOK_APP_ID,
-	secret : process.env.FACEBOOK_SECRET,
+	app_id : process.env.FACEBOOK_APP_ID || '528686930488180',
+	secret : process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121',
 	scope : 'user_likes,user_photos,user_photo_video_tags'
 }));
 
