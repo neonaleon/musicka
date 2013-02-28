@@ -67,6 +67,14 @@ ClientControl.prototype._handleYTResponse = function(response) {
 			var row = $('<tr>').append(title, rating, remove);
 			row.attr('id', videoID);
 			playList.append(row);
+			
+			// Inform server of added song
+			$.ajax({
+				dataType : 'POST',
+				url : "//localhost:3000/add",
+				data : {video: videoID}
+			});
+
 		}
 	} else {
 		alert("YouTube video does not exist");
@@ -107,6 +115,13 @@ ClientControl.prototype._onRemoveSong = function(id) {
 	}
 	
 	$('#'+videoID).remove();
+	
+	// Inform server of added song
+	$.ajax({
+		dataType : 'POST',
+		url : "//localhost:3000/remove",
+		data : {video: videoID}
+	});
 }
 
 ClientControl.prototype.handleYTState = function(state) {
