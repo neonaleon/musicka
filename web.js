@@ -26,7 +26,22 @@ express.session({
 	secret : process.env.FACEBOOK_SECRET,
 	scope : 'user_likes,user_photos,user_photo_video_tags'
 }));
-//app.engine('.htm', require('jade'));
+
+app.configure(function() {
+	// disable layout
+	app.set("view options", {
+		layout : false
+	});
+
+	// make a custom html template
+	app.register('.html', {
+		compile : function(str, options) {
+			return function(locals) {
+				return str;
+			};
+		}
+	});
+});
 
 // listen to the PORT given to us in the environment
 var port = process.env.PORT || 3000;
@@ -119,7 +134,7 @@ app.get('/', handle_facebook_request);
 app.post('/', handle_facebook_request);*/
 
 function handle_request(req, res) {
-	res.redirect('/index.htm');
+	res.render('client.html');
 }
 
 app.get('/', handle_request);
