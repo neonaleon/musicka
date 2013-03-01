@@ -12,6 +12,10 @@ window.fbAsyncInit = function() {
 	FB.getLoginStatus(function(response) {
 		if (response.status === 'connected') {
 			session.userID = response.authResponse.userID;
+			if(!session.isControlInit && clientController) {
+				clientController.init();
+				session.isControlInit = true;
+			}
 		} else if (response.status === 'not_authorized') {
 			//login();
 		} else {
@@ -44,5 +48,6 @@ window.fbAsyncInit = function() {
 }*/
 
 var session = {
-	userID : null
+	userID 			: null,
+	isControlInit	: false
 }

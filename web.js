@@ -4,7 +4,7 @@ var FacebookStrategy	= require('passport-facebook').Strategy;
 
 var FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || '528686930488180';
 var FACEBOOK_APP_SECRET = process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121';
-var APP_DOMAIN = process.env.APP_DOMAIN || 'localhost:3000/';
+var APP_DOMAIN = process.env.APP_DOMAIN || 'http://localhost:3000/';
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -84,7 +84,9 @@ function handle_remove_song_request(req, res) {
 }
 
 function handle_get_list_request(req, res) {
-	
+	console.log(req.body.fbid);
+	res.json({list:[{v:'plWnm7UpsXk', r:5}, {v:'pj-T_LxSCng', r:5}, {v:'HNtBphqE_LA', r:4},
+		{v:'KU9Z9uWcMU4', r:0}, {v:'hrzIykdka4s', r:1}, {v:'y8Kyi0WNg40', r:0}]});
 }
 
 function handle_rate_song_request(req, res) {

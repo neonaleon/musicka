@@ -10,6 +10,12 @@ function ClientControl(model) {
 	window.onYouTubePlayerReady = function(playerId) {
 		controller._player = $('#'+MUSICKA.Properties.YTPLAYER)[0];
 		controller._player.addEventListener('onStateChange', 'handleYTStateChange');
+		
+		// Play first video now
+		var nextSong = controller._model.getNextSong();
+		if(!controller._model.nowPlaying() && nextSong) {
+			controller._onPlaySong(nextSong);
+		}
 	}
 }
 
@@ -25,6 +31,64 @@ ClientControl.prototype.init = function() {
 	
 	// Load element functions
 	$('#'+MUSICKA.Element.ADD_SONG_BTN_ID).click(this._onAddSong.bind(this));
+	
+	// Retrieve playlist from server
+	this._getMyPlaylist();
+}
+
+ClientControl.prototype._addSongModelView = function(videoID, rating, informServer) {
+	var inform = informServer;
+	var rate = rating || 0;
+	if(arguments.length < 3) {
+		inform = true;
+	}
+	
+	var control = this;
+	$.ajax({
+		dataType: 'jsonp',
+		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,
+		success: function(response) {
+			if(typeof response.feed.entry !== 'undefined') {
+				// Video is available
+				var videoID = control._parseURL(response.feed.entry[0].link[0].href);
+				if(!control._model.containsSong(videoID)) {
+					control._model.addSong(videoID);
+					
+					// Play video now if none are playing
+					if(!control._model.nowPlaying()) {
+						control._onPlaySong(videoID);
+					}
+					
+					// Add row to html view
+					var playList = $('#'+MUSICKA.Element.PLAYLIST_ID);
+					var title = $('<a>').html(response.feed.entry[0].title.$t);
+					title.attr('href', '#');
+					title.attr('onClick', 'return false;');
+					title.click({video: videoID}, control._onPlaySong.bind(control));
+					title = $('<td>').append(title);
+					var remove = $('<button class=\"btn\">').html("Remove");
+					remove.click({video: videoID}, control._onRemoveSong.bind(control));
+					remove = $('<td>').append(remove);
+					var rating = $('<td>').html(rate);
+					var row = $('<tr>').append(title, rating, remove);
+					row.attr('id', videoID);
+					playList.append(row);
+					
+					// Inform server of added song
+					if(!inform) {
+						return;
+					}
+					$.ajax({
+						dataType : 'POST',
+						url : "//localhost:3000/add",
+						data : {video: videoID, fbid: session.userID}
+					});
+				}
+			} else {
+				alert("YouTube video does not exist");
+			}
+		}
+	});
 }
 
 ClientControl.prototype._onAddSong = function() {
@@ -37,13 +101,10 @@ ClientControl.prototype._onAddSong = function() {
 		return;
 	}
 	
-	$.ajax({
-		dataType: 'jsonp',
-		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,
-		success: this._handleYTResponse.bind(this)
-	});
+	this._addSongModelView(videoID);
 }
 
+/* Relocate video response to allow use of closures
 ClientControl.prototype._handleYTResponse = function(response) {
 	if(typeof response.feed.entry !== 'undefined') {
 		// Video is available
@@ -77,12 +138,11 @@ ClientControl.prototype._handleYTResponse = function(response) {
 				url : "//localhost:3000/add",
 				data : {video: videoID, fbid: session.userID}
 			});
-
 		}
 	} else {
 		alert("YouTube video does not exist");
 	}
-}
+}*/
 
 ClientControl.prototype._parseURL = function(url) {
     var regExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
@@ -94,13 +154,37 @@ ClientControl.prototype._parseURL = function(url) {
     }
 }
 
+ClientControl.prototype._getMyPlaylist = function() {
+	var control = this;
+	
+	$.ajax({
+		type		: 'post',
+		url			: "//localhost:3000/getlist",
+		data		: {fbid: session.userID},
+		success		: function(response) {
+			for(var i = 0; i < response.list.length; i++) {
+				// Add each song
+				var videoID = response.list[i].v;
+				var rating = response.list[i].r;
+				control._addSongModelView(videoID, rating, false);
+			}
+			var firstSong = response.list[0].v || null;
+			
+			// Play first video now
+			if(!control._model.nowPlaying() && firstSong) {
+				control._onPlaySong(firstSong);
+			}
+		}
+	});
+}
+
 ClientControl.prototype._onPlaySong = function(id) {
 	var videoID = id;
 	if(typeof id !== 'string') {
 		videoID = id.data.video;
 	}
 	
-	if(videoID !== this._model.nowPlaying()) {
+	if(videoID !== this._model.nowPlaying() && this._player) {
 		this._model.playSong(videoID);
 		this._player.loadVideoById(videoID);
 	}

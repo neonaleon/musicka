@@ -1,6 +1,11 @@
+var clientController = null;
+
 window.onload = function() {
 	var clientModel = new MusicPlayer();
-	var clientController = new ClientControl(clientModel);
+	clientController = new ClientControl(clientModel);
 
-	clientController.init();
+	if(!session.isControlInit && session.userID) {
+		clientController.init();
+		session.isControlInit = true;
+	}
 }
