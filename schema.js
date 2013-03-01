@@ -7,6 +7,7 @@ client.connect();
 query = client.query('CREATE TABLE user_playlist (id varchar(16), song varchar(11), rating numeric, PRIMARY KEY(id, song))');
 //client.query("INSERT INTO user_playlist(id, song) values('', '', 0)");
 //query = client.query("SELECT song, rating FROM user_playlist WHERE id = ''");
+//query = client.query("DELETE FROM user_playlist WHERE id = '' AND song = ''");
 
 query.on('end', function() {
 	client.end();

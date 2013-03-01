@@ -85,8 +85,7 @@ function handle_add_song_request(req, res) {
 }
 
 function handle_remove_song_request(req, res) {
-	console.log(req.query.video);
-	console.log(req.query.fbid);
+	client.query("DELETE FROM user_playlist WHERE id = '"+req.query.fbid+"' AND song = '"+req.query.video+"'");
 	res.send('OK');
 }
 
