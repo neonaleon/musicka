@@ -95,16 +95,13 @@ function handle_get_list_request(req, res) {
 	res.json({list:[{v:'plWnm7UpsXk', r:5}, {v:'pj-T_LxSCng', r:5}, {v:'HNtBphqE_LA', r:4},
 		{v:'KU9Z9uWcMU4', r:0}, {v:'hrzIykdka4s', r:1}, {v:'y8Kyi0WNg40', r:0}]});*/
 	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '"+req.body.fbid+"'");
-	query.on('row', function(row, result) {
-		result.addRow(row);
+	var playlist = [];
+	query.on('row', function(row) {
+		playlist.push({v: row.song, r: row.rating});
 	});
 	query.on('end', function(result) {
 		var output = {};
-		var playList = output['list'] = [];
-		for(var i = 0; i < result.rows.length; i++) {
-			var row = result.rows[i];
-			playList.push({v: row.song, r: row.rating});
-		}
+		output['list'] = playlist;
 		res.json(output);
 	});
 }
