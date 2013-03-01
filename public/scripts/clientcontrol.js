@@ -17,8 +17,11 @@ ClientControl.prototype.init = function() {
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
-	swfobject.embedSWF('//www.youtube.com/v/Zhawgd0REhA?enablejsapi=1&playerapiid=ytplayer&version=3',
-		MUSICKA.Element.YT_PLAYER_ID, '425', '356', '8', null, null, params, atts);
+	swfobject.embedSWF('//www.youtube.com/v/' + MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID + '?enablejsapi=1&playerapiid=ytplayer&version=3',
+		MUSICKA.Element.YT_PLAYER_ID,
+		MUSICKA.Properties.YTPLAYER_WIDTH,
+		MUSICKA.Properties.YTPLAYER_HEIGHT,
+		'8', null, null, params, atts);
 	
 	// Load element functions
 	$('#'+MUSICKA.Element.ADD_SONG_BTN_ID).click(this._onAddSong.bind(this));

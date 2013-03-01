@@ -8,7 +8,10 @@ var MUSICKA = {
 	},
 	
 	Properties : {
-		YTPLAYER	: "mytplayer",
-		YTPATH		: "//gdata.youtube.com/",
+		YTPLAYER : "mytplayer",
+		YTPATH : "//gdata.youtube.com/",
+		YTPLAYER_WIDTH : "480",
+		YTPLAYER_HEIGHT	: "320",
+		YTPLAYER_DEFAULT_VIDEOID : "Zhawgd0REhA",
 	},
 };
