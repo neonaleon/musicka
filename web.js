@@ -90,9 +90,6 @@ function handle_remove_song_request(req, res) {
 }
 
 function handle_get_list_request(req, res) {
-	/*console.log(req.body.fbid);
-	res.json({list:[{v:'plWnm7UpsXk', r:5}, {v:'pj-T_LxSCng', r:5}, {v:'HNtBphqE_LA', r:4},
-		{v:'KU9Z9uWcMU4', r:0}, {v:'hrzIykdka4s', r:1}, {v:'y8Kyi0WNg40', r:0}]});*/
 	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '"+req.body.fbid+"'");
 	var playlist = [];
 	query.on('row', function(row) {
@@ -106,14 +103,9 @@ function handle_get_list_request(req, res) {
 }
 
 function handle_rate_song_request(req, res) {
-	if (req.facebook.token) {
-		console.log(req.facebook);
-		// use fql to get a list of my friends that are using this app
-		req.facebook.fql('SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', function(result) {
-			//req.friends_using_app = result;
-			console.log(result);
-		});
-	}
+	client.query("UPDATE user_playlist SET rating = '"+req.query.fbid+"' WHERE id = '"+req.query.video+
+		"' AND song = "+req.query.rate+"");
+	res.send('OK');
 }
 
 app.get('/', passport.authenticate('facebook'));

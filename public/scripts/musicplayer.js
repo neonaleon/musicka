@@ -36,15 +36,6 @@ MusicPlayer.prototype.removeSong = function(id) {
 	
 	// Update current playing song
 	if(this._current === index) {
-		/*if(this._current >= this.playList.length) {
-			this._current = this.playList.length - 1;
-		}
-		if(this._current < 0) {
-			this._current = null;
-			return '';
-		} else {
-			return this.playList[this._current].videoID;
-		}*/
 		this._current = -1;
 		return nextSong;
 	}

@@ -104,45 +104,13 @@ ClientControl.prototype._onAddSong = function() {
 	this._addSongModelView(videoID);
 }
 
-/* Relocate video response to allow use of closures
-ClientControl.prototype._handleYTResponse = function(response) {
-	if(typeof response.feed.entry !== 'undefined') {
-		// Video is available
-		var videoID = this._parseURL(response.feed.entry[0].link[0].href);
-		if(!this._model.containsSong(videoID)) {
-			this._model.addSong(videoID);
-			
-			// Play video now if none are playing
-			if(!this._model.nowPlaying()) {
-				this._onPlaySong(videoID);
-			}
-			
-			// Add row to html view
-			var playList = $('#'+MUSICKA.Element.PLAYLIST_ID);
-			var title = $('<a>').html(response.feed.entry[0].title.$t);
-			title.attr('href', '#');
-			title.attr('onClick', 'return false;');
-			title.click({video: videoID}, this._onPlaySong.bind(this));
-			title = $('<td>').append(title);
-			var remove = $('<button class=\"btn\">').html("Remove");
-			remove.click({video: videoID}, this._onRemoveSong.bind(this));
-			remove = $('<td>').append(remove);
-			var rating = $('<td>').html('0');
-			var row = $('<tr>').append(title, rating, remove);
-			row.attr('id', videoID);
-			playList.append(row);
-			
-			// Inform server of added song
-			$.ajax({
-				dataType : 'POST',
-				url : "//localhost:3000/add",
-				data : {video: videoID, fbid: session.userID}
-			});
-		}
-	} else {
-		alert("YouTube video does not exist");
-	}
-}*/
+ClientControl.prototype._onRateSong = function(rate) {
+	$.ajax({
+		dataType : 'POST',
+		url : "rate",
+			data : {video: videoID, fbid: session.userID, rate: rate}
+	});
+}
 
 ClientControl.prototype._parseURL = function(url) {
     var regExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
