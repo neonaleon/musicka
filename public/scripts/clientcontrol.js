@@ -80,7 +80,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					}
 					$.ajax({
 						dataType : 'POST',
-						url : "//localhost:3000/add",
+						url : "add",
 						data : {video: videoID, fbid: session.userID}
 					});
 				}
@@ -159,7 +159,7 @@ ClientControl.prototype._getMyPlaylist = function() {
 	
 	$.ajax({
 		type		: 'post',
-		url			: "//localhost:3000/getlist",
+		url			: "getlist",
 		data		: {fbid: session.userID},
 		success		: function(response) {
 			for(var i = 0; i < response.list.length; i++) {
@@ -206,7 +206,7 @@ ClientControl.prototype._onRemoveSong = function(id) {
 	// Inform server of removed song
 	$.ajax({
 		dataType : 'POST',
-		url : "//localhost:3000/remove",
+		url : "remove",
 		data : {video: videoID, fbid: session.userID}
 	});
 }

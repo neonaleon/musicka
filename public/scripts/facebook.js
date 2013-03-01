@@ -2,7 +2,7 @@ window.fbAsyncInit = function() {
 	// init the FB JS SDK
 	FB.init({
 		appId : '528686930488180',
-		channelUrl : '//localhost:3000/channel.html',
+		channelUrl : 'channel.html',
 		status : true,
 		cookie : true,
 		xfbml : true
