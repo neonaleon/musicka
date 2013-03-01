@@ -75,7 +75,7 @@ ClientControl.prototype._handleYTResponse = function(response) {
 			$.ajax({
 				dataType : 'POST',
 				url : "//localhost:3000/add",
-				data : {video: videoID}
+				data : {video: videoID, fbid: session.userID}
 			});
 
 		}
@@ -119,11 +119,11 @@ ClientControl.prototype._onRemoveSong = function(id) {
 	
 	$('#'+videoID).remove();
 	
-	// Inform server of added song
+	// Inform server of removed song
 	$.ajax({
 		dataType : 'POST',
 		url : "//localhost:3000/remove",
-		data : {video: videoID}
+		data : {video: videoID, fbid: session.userID}
 	});
 }
 

@@ -4,7 +4,7 @@ var FacebookStrategy	= require('passport-facebook').Strategy;
 
 var FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || '528686930488180';
 var FACEBOOK_APP_SECRET = process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121';
-
+var APP_DOMAIN = process.env.APP_DOMAIN || 'localhost:3000/';
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -27,7 +27,7 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new FacebookStrategy({
 	clientID : FACEBOOK_APP_ID,
 	clientSecret : FACEBOOK_APP_SECRET,
-	callbackURL : "http://localhost:3000/auth/facebook/callback"
+	callbackURL : APP_DOMAIN + 'auth/facebook/callback'
 }, function(accessToken, refreshToken, profile, done) {
 	// asynchronous verification, for effect...
 	process.nextTick(function() {
@@ -41,26 +41,21 @@ passport.use(new FacebookStrategy({
 }));
 
 // create an express webserver
-var app = express.createServer(express.logger(), express.static(__dirname + '/public'), express.bodyParser(), express.cookieParser(),
-	express.session({
+var app = express();
+
+// Configure express webserver
+app.configure(function() {
+	// make a custom html renderer
+	app.engine('.html', require('ejs').renderFile);
+	app.engine('.htm', require('ejs').renderFile);
+	
+	app.use(express.logger());
+	app.use(express.static(__dirname + '/public'));
+	app.use(express.bodyParser());
+	app.use(express.cookieParser());
+	app.use(express.session({
 		secret : process.env.SESSION_SECRET || 'secret123'
 	}));
-
-// Register html renderer for express
-app.configure(function() {
-	// disable layout
-	app.set("view options", {
-		layout : false
-	});
-
-	// make a custom html template
-	app.register('.html', {
-		compile : function(str, options) {
-			return function(locals) {
-				return str;
-			};
-		}
-	});
 	app.use(passport.initialize());
 	app.use(passport.session()); 
 });
@@ -77,21 +72,19 @@ function handle_request(req, res) {
 }
 
 function handle_add_song_request(req, res) {
-	if (req.facebook.token) {
-		console.log(req.query.video);
-	}
+	console.log(req.query.video);
+	console.log(req.query.fbid);
+	res.send('OK');
 }
 
 function handle_remove_song_request(req, res) {
-	if (req.facebook.token) {
-		console.log(req.query.video);
-	}
+	console.log(req.query.video);
+	console.log(req.query.fbid);
+	res.send('OK');
 }
 
 function handle_get_list_request(req, res) {
-	if (req.facebook.token) {
-		console.log(req.query.video);
-	}
+	
 }
 
 function handle_rate_song_request(req, res) {
@@ -105,8 +98,19 @@ function handle_rate_song_request(req, res) {
 	}
 }
 
-app.get('/', handle_request);
-app.post('/', handle_request);
+app.get('/', passport.authenticate('facebook'));
+app.post('/', passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+	failureRedirect : '/login'
+	
+}), function(req, res) {
+	// Successful authentication, redirect home.
+	res.redirect('/canvas');
+});
+
+app.get('/canvas', handle_request);
+app.post('/canvas', handle_request);
 
 app.get('/add', handle_add_song_request);
 app.post('/add', handle_add_song_request);
