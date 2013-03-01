@@ -4,7 +4,7 @@ var FacebookStrategy	= require('passport-facebook').Strategy;
 
 var FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || '528686930488180';
 var FACEBOOK_APP_SECRET = process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121';
-
+var APP_DOMAIN = process.env.APP_DOMAIN || 'localhost:3000/';
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -27,7 +27,7 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new FacebookStrategy({
 	clientID : FACEBOOK_APP_ID,
 	clientSecret : FACEBOOK_APP_SECRET,
-	callbackURL : "http://localhost:3000/auth/facebook/callback"
+	callbackURL : APP_DOMAIN + 'auth/facebook/callback'
 }, function(accessToken, refreshToken, profile, done) {
 	// asynchronous verification, for effect...
 	process.nextTick(function() {
