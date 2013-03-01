@@ -1,10 +1,13 @@
 var express				= require('express');
 var passport			= require('passport');
 var FacebookStrategy	= require('passport-facebook').Strategy;
+var pg					= require('pg').native;
 
-var FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || '528686930488180';
-var FACEBOOK_APP_SECRET = process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121';
-var APP_DOMAIN = process.env.APP_DOMAIN || 'http://localhost:3000/';
+var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '528686930488180';
+var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121';
+var APP_DOMAIN			= process.env.APP_DOMAIN || 'http://localhost:3000/';
+var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
+
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -40,6 +43,11 @@ passport.use(new FacebookStrategy({
 	});
 }));
 
+// Initialise postgres connection
+var client;
+client = new pg.Client(PG_CONNECT_STR);
+client.connect();
+
 // create an express webserver
 var app = express();
 
@@ -72,8 +80,7 @@ function handle_request(req, res) {
 }
 
 function handle_add_song_request(req, res) {
-	console.log(req.query.video);
-	console.log(req.query.fbid);
+	client.query("INSERT INTO user_playlist(id, song, rating) values('"+req.query.fbid+"', '"+req.query.video+"', 0)");
 	res.send('OK');
 }
 
@@ -84,9 +91,22 @@ function handle_remove_song_request(req, res) {
 }
 
 function handle_get_list_request(req, res) {
-	console.log(req.body.fbid);
+	/*console.log(req.body.fbid);
 	res.json({list:[{v:'plWnm7UpsXk', r:5}, {v:'pj-T_LxSCng', r:5}, {v:'HNtBphqE_LA', r:4},
-		{v:'KU9Z9uWcMU4', r:0}, {v:'hrzIykdka4s', r:1}, {v:'y8Kyi0WNg40', r:0}]});
+		{v:'KU9Z9uWcMU4', r:0}, {v:'hrzIykdka4s', r:1}, {v:'y8Kyi0WNg40', r:0}]});*/
+	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '"+req.body.fbid+"'");
+	query.on('row', function(row, result) {
+		result.addRow(row);
+	});
+	query.on('end', function(result) {
+		var output = {};
+		var playList = output['list'] = [];
+		for(var i = 0; i < result.rows.length; i++) {
+			var row = result.rows[i];
+			playList.push({v: row.song, r: row.rating});
+		}
+		res.json(output);
+	});
 }
 
 function handle_rate_song_request(req, res) {
