@@ -21,7 +21,7 @@ function ClientControl(model) {
 
 ClientControl.prototype.init = function() {
 	// Load YouTube player
-	var params = {allowScriptAccess : 'always'};
+	var params = {allowScriptAccess : 'always', scale : 'exactfit'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
 	swfobject.embedSWF('//www.youtube.com/v/' + MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID + '?enablejsapi=1&playerapiid=ytplayer&version=3',
 		MUSICKA.Element.YT_PLAYER_ID,
