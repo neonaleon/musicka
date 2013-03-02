@@ -7,6 +7,7 @@ var MUSICKA = {
 		RECOM_LIST_ID	: "",
 		LEFT_CONTENT_ID : "leftContentArea",
 		MAIN_CONTENT_ID : "mainContentArea",
+		ALERT_ID 		: "alertArea",
 	},
 	
 	Properties : {
