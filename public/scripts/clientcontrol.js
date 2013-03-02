@@ -49,7 +49,7 @@ ClientControl.prototype._getRecommend = function(n) {
 			var list = [];
 			for(var i = 0; i < response.list.length; i++) {
 				// Add each recommendation
-				var videoID = response.list[i].v;
+				var videoID = response.list[i];
 				list.push(videoID);
 			}
 			console.log(list);

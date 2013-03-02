@@ -114,15 +114,15 @@ function handle_recommend(req, res) {
 				var processed = 0;
 				getPlaylist(f, function(result) {
 					for(var j = 0; j < result.length; j++) {
-						songs.push(result[i]);
+						songs.push(result[j].v);
 					}
 					processed++;
 					if(processed >= friends.length) {
-						var output = [];
+						var arr = [];
 						if(songs.length > 0) {
-							output.push(songs[Math.floor(Math.random() * songs.length)])
+							arr.push(songs[Math.floor(Math.random() * songs.length)])
 						}
-						output = {list: output};
+						var output = {list: arr};
 						res.json(output);
 					}
 				});
