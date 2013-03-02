@@ -5,9 +5,12 @@ var pg					= require('pg');
 
 var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
 var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
-var APP_DOMAIN			= process.env.APP_DOMAIN || 'http://localhost:3000/';
-var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local'; 
+
+var APP_DOMAIN			= process.env.APP_DOMAIN || '//localhost:3000/';
+var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local';
 //'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
+var PORT				= process.env.PORT || 3000;
+
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -69,11 +72,8 @@ app.configure(function() {
 	app.use(passport.session()); 
 });
 
-// listen to the PORT given to us in the environment
-var port = process.env.PORT || 3000;
-
-app.listen(port, function() {
-	console.log("Listening on " + port);
+app.listen(PORT, function() {
+	console.log("Listening on " + PORT);
 });
 
 function handle_request(req, res) {
@@ -109,6 +109,11 @@ function handle_rate_song_request(req, res) {
 	res.send('OK');
 }
 
+function handle_js(req, res) {
+	res.render('facebook.ejs',
+		{id: FACEBOOK_APP_ID, domain: APP_DOMAIN});
+}
+
 app.get('/auth/facebook', passport.authenticate('facebook'));
 app.post('/auth/facebook', passport.authenticate('facebook'));
 
@@ -129,6 +134,9 @@ app.post('/auth/facebook/callback', passport.authenticate('facebook', {
 
 app.get('/', handle_request);
 app.post('/', handle_request);
+
+app.get('/scripts/facebook.js', handle_js);
+app.post('/scripts/facebook.js', handle_js);
 
 app.get('/add', handle_add_song_request);
 app.post('/add', handle_add_song_request);
