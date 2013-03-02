@@ -62,7 +62,7 @@ window.fbAsyncInit = function() {
 	}(document, /*debug*/false));
 	
 function login() {
-	window.location = "auth/facebook/";
+	top.location = "auth/facebook/";
 }
 
 var session = {
