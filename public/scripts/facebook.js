@@ -1,7 +1,9 @@
+var APP_ID = '528686930488180';
+
 window.fbAsyncInit = function() {
 	// init the FB JS SDK
 	FB.init({
-		appId : '537482629624950',
+		appId : APP_ID,
 		channelUrl : 'channel.html',
 		status : true,
 		cookie : true,
@@ -60,7 +62,7 @@ window.fbAsyncInit = function() {
 	}(document, /*debug*/false));
 	
 function login() {
-	top.location = "https://www.facebook.com/dialog/oauth?client_id=537482629624950&redirect_uri="+window.location;
+	top.location = "https://www.facebook.com/dialog/oauth?client_id="+APP_ID+"&redirect_uri="+window.location;
 }
 
 var session = {
