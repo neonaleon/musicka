@@ -3,8 +3,8 @@ var passport			= require('passport');
 var FacebookStrategy	= require('passport-facebook').Strategy;
 var pg					= require('pg').native;
 
-var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '528686930488180';
-var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '756a7cfcdf1e8c38d3299fd7964a5121';
+var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
+var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
 var APP_DOMAIN			= process.env.APP_DOMAIN || 'http://localhost:3000/';
 var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
 
