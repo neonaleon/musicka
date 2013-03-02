@@ -1,7 +1,7 @@
 var express				= require('express');
 var passport			= require('passport');
 var FacebookStrategy	= require('passport-facebook').Strategy;
-var pg					= require('pg').native;
+var pg					= require('pg');
 
 var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
 var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
