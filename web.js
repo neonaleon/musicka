@@ -108,19 +108,26 @@ function handle_rate_song_request(req, res) {
 	res.send('OK');
 }
 
-app.get('/', passport.authenticate('facebook'));
-app.post('/', passport.authenticate('facebook'));
+app.get('/auth/facebook', passport.authenticate('facebook'));
+app.post('/auth/facebook', passport.authenticate('facebook'));
 
 app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 	failureRedirect : '/login'
 	
 }), function(req, res) {
-	// Successful authentication, redirect home.
-	res.redirect('/canvas');
+	// Successful authentication, redirect to app
+	res.redirect('/');
+});
+app.post('/auth/facebook/callback', passport.authenticate('facebook', {
+	failureRedirect : '/login'
+	
+}), function(req, res) {
+	// Successful authentication, redirect to app
+	res.redirect('/');
 });
 
-app.get('/canvas', handle_request);
-app.post('/canvas', handle_request);
+app.get('/', handle_request);
+app.post('/', handle_request);
 
 app.get('/add', handle_add_song_request);
 app.post('/add', handle_add_song_request);

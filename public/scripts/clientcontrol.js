@@ -136,11 +136,11 @@ ClientControl.prototype._getMyPlaylist = function() {
 				var rating = response.list[i].r;
 				control._addSongModelView(videoID, rating, false);
 			}
-			var firstSong = response.list[0].v || null;
+			var firstSong = response.list[0] || null;
 			
 			// Play first video now
 			if(!control._model.nowPlaying() && firstSong) {
-				control._onPlaySong(firstSong);
+				control._onPlaySong(firstSong.v);
 			}
 		}
 	});
