@@ -182,7 +182,7 @@ ClientControl.prototype._onRemoveSong = function(id) {
 ClientControl.prototype._alert = function(alertType, alertText) {
 	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
 	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">')
-				.append($('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;')
+				.append($('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;'))
 				.append($('<p>').html(alertText));
 	alertArea.append(alert);
 }
