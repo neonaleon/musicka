@@ -27,23 +27,6 @@ window.fbAsyncInit = function() {
 	});*/
 	
 	FB.Canvas.setAutoGrow();
-	FB.getLoginStatus(function(response) {
-		if (response.status === 'connected') {
-			alert('fb client connected');
-			session.userID = response.authResponse.userID;
-			if(!session.isControlInit && clientController) {
-				clientController.init();
-				session.isControlInit = true;
-			}
-		} else if (response.status === 'not_authorized') {
-			alert('fb client not auth');
-			login();
-		} else {
-			alert('fb client not logged in');
-			// not_logged_in
-			login();
-		}
-	});
 };
 
 ( function(d, debug) {
@@ -57,9 +40,27 @@ window.fbAsyncInit = function() {
 		js.src = "//connect.facebook.net/en_US/all" + ( debug ? "/debug" : "") + ".js";
 		ref.parentNode.insertBefore(js, ref);
 	}(document, /*debug*/false));
+
+FB.getLoginStatus(function(response) {
+	if (response.status === 'connected') {
+		alert('fb client connected');
+		session.userID = response.authResponse.userID;
+		if(!session.isControlInit && clientController) {
+			clientController.init();
+			session.isControlInit = true;
+		}
+	} else if (response.status === 'not_authorized') {
+		alert('fb client not auth');
+		login();
+	} else {
+		alert('fb client not logged in');
+		// not_logged_in
+		login();
+	}
+});
 	
 function login() {
-	window.location = "auth/facebook/";
+	top.location = "https://www.facebook.com/dialog/oauth?client_id=537482629624950&redirect_uri="+window.location;
 }
 
 var session = {
