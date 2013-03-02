@@ -1,4 +1,5 @@
 var APP_ID = '528686930488180';
+var APP_DOMAIN = 'http://localhost:3000/';
 
 window.fbAsyncInit = function() {
 	// init the FB JS SDK
@@ -30,7 +31,7 @@ window.fbAsyncInit = function() {
 	
 	FB.getLoginStatus(function(response) {
 		if (response.status === 'connected') {
-			alert('fb client connected');
+			//alert('fb client connected');
 			session.userID = response.authResponse.userID;
 			if(!session.isControlInit && clientController) {
 				clientController.init();
@@ -41,7 +42,6 @@ window.fbAsyncInit = function() {
 			login();
 		} else {
 			alert('fb client not logged in');
-			// not_logged_in
 			login();
 		}
 	});
@@ -62,7 +62,7 @@ window.fbAsyncInit = function() {
 	}(document, /*debug*/false));
 	
 function login() {
-	top.location = "https://www.facebook.com/dialog/oauth?client_id="+APP_ID+"&redirect_uri="+window.location;
+	top.location = "auth/facebook/";
 }
 
 var session = {
