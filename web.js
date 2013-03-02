@@ -1,12 +1,13 @@
 var express				= require('express');
 var passport			= require('passport');
 var FacebookStrategy	= require('passport-facebook').Strategy;
-var pg					= require('pg').native;
+var pg					= require('pg');
 
 var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
 var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
 var APP_DOMAIN			= process.env.APP_DOMAIN || 'http://localhost:3000/';
-var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
+var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local'; 
+//'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
