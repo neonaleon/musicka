@@ -66,7 +66,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					title.attr('onClick', 'return false;');
 					title.click({video: videoID}, control._onPlaySong.bind(control));
 					title = $('<td>').append(title);
-					var remove = $('<button class=\"btn\">').html("Remove");
+					var remove = $('<button class=\"btn btn-primary\">').html("Remove");
 					remove.click({video: videoID}, control._onRemoveSong.bind(control));
 					remove = $('<td>').append(remove);
 					var rating = $('<td>').html(rate);
@@ -85,7 +85,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					});
 				}
 			} else {
-				alert("YouTube video does not exist");
+				control._alert('error', "YouTube video does not exist");
 			}
 		}
 	});
@@ -97,7 +97,7 @@ ClientControl.prototype._onAddSong = function() {
 	inputField.value = '';
 	
 	if(!videoID) {
-		alert("Invalid YouTube Link");
+		this._alert('error', "YouTube link is invalid");
 		return;
 	}
 	
@@ -177,6 +177,14 @@ ClientControl.prototype._onRemoveSong = function(id) {
 		url : "remove",
 		data : {video: videoID, fbid: session.userID}
 	});
+}
+
+ClientControl.prototype._alert = function(alertType, alertText) {
+	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
+	var row = $('<div class=\"row-fluid\">');
+	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">').html(alertText);
+	var close = $('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;');
+	alertArea.append(row.append(alert.append(close)));
 }
 
 ClientControl.prototype.handleYTState = function(state) {
