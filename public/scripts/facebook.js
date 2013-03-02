@@ -38,10 +38,10 @@ window.fbAsyncInit = function() {
 				session.isControlInit = true;
 			}
 		} else if (response.status === 'not_authorized') {
-			alert('fb client not auth');
+			//alert('fb client not auth');
 			login();
 		} else {
-			alert('fb client not logged in');
+			//alert('fb client not logged in');
 			login();
 		}
 	});
