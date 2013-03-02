@@ -85,7 +85,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					});
 				}
 			} else {
-				this._alert('error', "YouTube video does not exist");
+				control._alert('error', "YouTube video does not exist");
 			}
 		}
 	});
@@ -97,7 +97,7 @@ ClientControl.prototype._onAddSong = function() {
 	inputField.value = '';
 	
 	if(!videoID) {
-		this._alert('error', "Invalid YouTube Link");
+		this._alert('error', "YouTube link is invalid");
 		return;
 	}
 	
@@ -183,7 +183,7 @@ ClientControl.prototype._alert = function(alertType, alertText) {
 	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
 	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">')
 				.append($('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;'))
-				.append($('<p>').html(alertText));
+				.html(alertText);
 	alertArea.append(alert);
 }
 
