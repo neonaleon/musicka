@@ -181,10 +181,10 @@ ClientControl.prototype._onRemoveSong = function(id) {
 
 ClientControl.prototype._alert = function(alertType, alertText) {
 	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
-	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">')
-				.append($('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;'))
-				.html(alertText);
-	alertArea.append(alert);
+	var row = $('<div class=\"row-fluid\">');
+	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">').html(alertText);
+	var close = $('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;');
+	alertArea.append(row.append(alert.append(close)));
 }
 
 ClientControl.prototype.handleYTState = function(state) {
