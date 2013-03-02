@@ -34,6 +34,27 @@ ClientControl.prototype.init = function() {
 	
 	// Retrieve playlist from server
 	this._getMyPlaylist();
+	
+	// TODO Test 3 recommendations
+	this._getRecommend();
+}
+
+ClientControl.prototype._getRecommend = function(n) {
+	var count = n || 1;
+	$.ajax({
+		type		: 'post',
+		url			: "recommend",
+		data		: {fbid: session.userID, n: count},
+		success		: function(response) {
+			var list = [];
+			for(var i = 0; i < response.list.length; i++) {
+				// Add each recommendation
+				var videoID = response.list[i].v;
+				list.push(videoID);
+			}
+			console.log(list);
+		}
+	});
 }
 
 ClientControl.prototype._addSongModelView = function(videoID, rating, informServer) {

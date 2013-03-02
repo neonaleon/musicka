@@ -2,12 +2,17 @@ var express				= require('express');
 var passport			= require('passport');
 var FacebookStrategy	= require('passport-facebook').Strategy;
 var pg					= require('pg');
+var getjson				= require('./getjson');
 
 var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
 var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
 var APP_DOMAIN			= process.env.APP_DOMAIN || '//localhost:3000/';
 var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local';
 var PORT				= process.env.PORT || 3000;
+
+// Initialise postgres connection
+var client = new pg.Client(PG_CONNECT_STR);
+client.connect();
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -35,19 +40,18 @@ passport.use(new FacebookStrategy({
 }, function(accessToken, refreshToken, profile, done) {
 	// asynchronous verification, for effect...
 	process.nextTick(function() {
-
-		// To keep the example simple, the user's Facebook profile is returned to
-		// represent the logged-in user.  In a typical application, you would want
-		// to associate the Facebook account with a user record in your database,
-		// and return that user instead.
+		var query = client.query("SELECT token FROM user_token WHERE id = '"+profile.id+"'");
+		query.on('end', function(result) {
+			var query2;
+			if(result.rowCount >= 1) {
+				query2 = client.query("UPDATE user_token SET token = '"+accessToken+"' WHERE id = '"+profile.id+"'");
+			} else {
+				query2 = client.query("INSERT INTO user_token(id, token) values('"+profile.id+"', '"+accessToken+"')");
+			}
+		});
 		return done(null, profile);
 	});
 }));
-
-// Initialise postgres connection
-var client;
-client = new pg.Client(PG_CONNECT_STR);
-client.connect();
 
 // create an express webserver
 var app = express();
@@ -77,6 +81,44 @@ function handle_request(req, res) {
 	res.render('client.html');
 }
 
+function handle_recommend(req, res) {
+	var query	= 'q=SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
+	var user	= req.body.fbid;
+	var token	= null;
+	var count	= 1;
+	if(typeof req.query.n !== 'undefined') {
+		count = parseInt(req.query.n);
+	}
+	
+	var tokenQuery = client.query("SELECT token FROM user_token WHERE id = '" + user + "'");
+	tokenQuery.on('row', function(row) {
+		token = row.token;
+	});
+	tokenQuery.on('end', function(result) {
+		if(token === null) {
+			res.redirect('/auth/facebook');
+			return;
+		}
+		var options = {
+			host	: 'graph.facebook.com',
+			path	: 'fql?' + encodeURI(query) + '&access_token=' + token,
+			port	: 443
+		}
+		getjson.getJSON(options, function(res, obj) {
+			//console.log(obj);
+			var songs = [];
+			var friendAppUsers = JSON.parse(obj);
+			friendAppUsers = friendAppUsers.data;
+			for(var i = 0; i < friendAppUsers.length; i++) {
+				var friendID = friendAppUsers[i].uid;
+				songs.push(friendID);
+			}
+			//console.log(songs);
+			res.send('OK');
+		});
+	});
+}
+
 function handle_add_song_request(req, res) {
 	client.query("INSERT INTO user_playlist(id, song, rating) values('"+req.query.fbid+"', '"+req.query.video+"', 0)");
 	res.send('OK');
@@ -101,8 +143,8 @@ function handle_get_list_request(req, res) {
 }
 
 function handle_rate_song_request(req, res) {
-	client.query("UPDATE user_playlist SET rating = '"+req.query.fbid+"' WHERE id = '"+req.query.video+
-		"' AND song = "+req.query.rate+"");
+	client.query("UPDATE user_playlist SET rating = '"+req.body.rate+"' WHERE id = '"+req.body.fbid+
+		"' AND song = '"+req.body.video+"'");
 	res.send('OK');
 }
 
@@ -146,3 +188,6 @@ app.post('/getlist', handle_get_list_request);
 
 app.get('/rate', handle_rate_song_request);
 app.post('/rate', handle_rate_song_request);
+
+app.get('/recommend', handle_recommend);
+app.post('/recommend', handle_recommend);
