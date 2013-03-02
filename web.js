@@ -2,7 +2,7 @@ var express				= require('express');
 var passport			= require('passport');
 var FacebookStrategy	= require('passport-facebook').Strategy;
 var pg					= require('pg');
-var getjson				= require('./getjson');
+var graph				= require('fbgraph');
 
 var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
 var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
@@ -81,8 +81,9 @@ function handle_request(req, res) {
 	res.render('client.html');
 }
 
+// Good luck
 function handle_recommend(req, res) {
-	var query	= 'q=SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
+	var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
 	var user	= req.body.fbid;
 	var token	= null;
 	var count	= 1;
@@ -99,22 +100,33 @@ function handle_recommend(req, res) {
 			res.redirect('/auth/facebook');
 			return;
 		}
-		var options = {
-			host	: 'graph.facebook.com',
-			path	: 'fql?' + encodeURI(query) + '&access_token=' + token,
-			port	: 443
-		}
-		getjson.getJSON(options, function(res, obj) {
-			//console.log(obj);
-			var songs = [];
-			var friendAppUsers = JSON.parse(obj);
-			friendAppUsers = friendAppUsers.data;
-			for(var i = 0; i < friendAppUsers.length; i++) {
-				var friendID = friendAppUsers[i].uid;
-				songs.push(friendID);
+		
+		graph.setAccessToken(token);
+		graph.fql(query, function(err, fres) {
+			var friendList = fres.data;
+			var friends = [];
+			for(var i = 0; i < friendList.length; i++) {
+				friends.push(friendList[i].uid);
 			}
-			//console.log(songs);
-			res.send('OK');
+			for(var i = 0; i < friends.length; i++) {
+				var f = friends[i];
+				var songs = [];
+				var processed = 0;
+				getPlaylist(f, function(result) {
+					for(var j = 0; j < result.length; j++) {
+						songs.push(result[i]);
+					}
+					processed++;
+					if(processed >= friends.length) {
+						var output = [];
+						if(songs.length > 0) {
+							output.push(songs[Math.floor(Math.random() * songs.length)])
+						}
+						output = {list: output};
+						res.json(output);
+					}
+				});
+			}
 		});
 	});
 }
@@ -129,16 +141,22 @@ function handle_remove_song_request(req, res) {
 	res.send('OK');
 }
 
-function handle_get_list_request(req, res) {
-	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '"+req.body.fbid+"'");
+function handle_get_list_request(req, res) {	
+	getPlaylist(req.body.fbid, function(result) {
+		var output = {};
+		output['list'] = result;
+		res.json(output);
+	});
+}
+
+function getPlaylist(userID, done) {
+	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '"+userID+"'");
 	var playlist = [];
 	query.on('row', function(row) {
 		playlist.push({v: row.song, r: row.rating});
 	});
 	query.on('end', function(result) {
-		var output = {};
-		output['list'] = playlist;
-		res.json(output);
+		done(playlist);
 	});
 }
 
