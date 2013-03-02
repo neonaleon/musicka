@@ -1,4 +1,4 @@
-var APP_ID = '528686930488180';
+var APP_ID = '537482629624950';
 var APP_DOMAIN = 'http://localhost:3000/';
 
 window.fbAsyncInit = function() {

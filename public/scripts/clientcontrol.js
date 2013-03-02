@@ -20,6 +20,7 @@ function ClientControl(model) {
 }
 
 ClientControl.prototype.init = function() {
+	var self = this;
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always', scale : 'exactfit'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
@@ -31,6 +32,7 @@ ClientControl.prototype.init = function() {
 	
 	// Load element functions
 	$('#'+MUSICKA.Element.ADD_SONG_BTN_ID).click(this._onAddSong.bind(this));
+	$('.rateStar').rating({ callback: self._setRating.bind(this) });
 	
 	// Retrieve playlist from server
 	this._getMyPlaylist();
@@ -104,11 +106,11 @@ ClientControl.prototype._onAddSong = function() {
 	this._addSongModelView(videoID);
 }
 
-ClientControl.prototype._onRateSong = function(rate) {
+ClientControl.prototype._onRateSong = function(videoID, rate) {
 	$.ajax({
-		dataType : 'POST',
+		type : 'post',
 		url : "rate",
-			data : {video: videoID, fbid: session.userID, rate: rate}
+		data : {video: videoID, fbid: session.userID, rate: rate}
 	});
 }
 
@@ -156,6 +158,8 @@ ClientControl.prototype._onPlaySong = function(id) {
 		this._model.playSong(videoID);
 		this._player.loadVideoById(videoID);
 	}
+	
+	this._updateRating(id);
 }
 
 ClientControl.prototype._onRemoveSong = function(id) {
@@ -185,6 +189,16 @@ ClientControl.prototype._alert = function(alertType, alertText) {
 	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">').html(alertText);
 	var close = $('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;');
 	alertArea.append(row.append(alert.append(close)));
+}
+
+ClientControl.prototype._setRating = function(value, link) {
+	value = value || 0;
+	this._onRateSong(this._model.nowPlaying(), value);
+}
+
+ClientControl.prototype._updateRating = function(id) {
+	var index = this._model._song(id).rating - 1;
+	if (index >= 0) $('input.rateStar').rating('select', index);
 }
 
 ClientControl.prototype.handleYTState = function(state) {

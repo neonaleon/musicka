@@ -10,17 +10,17 @@
 		<!-- Definition -->
 		<script src="scripts/define.js"></script>
 		<!-- Core client imports -->
-		
 		<script src="scripts/song.js"></script>
 		<script src="scripts/musicplayer.js"></script>
 		<script src="scripts/clientcontrol.js"></script>
-		<!-- Main JS Entry point -->
-		<script src="scripts/main.js"></script>
 		<!-- Style -->
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap-responsive.css">
-		<link rel="stylesheet" type="text/css" href="stylesheets/custom.css" />
 		<script src="bootstrap/bootstrap.js"></script>
+		<script src="stylesheets/jquery.rating.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/custom.css" />
+		<!-- Main JS Entry point -->
+		<script src="scripts/main.js"></script>
 	</head>
 	
 	<body>
@@ -34,11 +34,11 @@
 			</div>
 			<div class="row-fluid">
 				<div class="span4" id="leftContentArea">
-					<label><small>Your playlist</small></label>
+					<small>Your playlist</small>
 					<table class="table table-condensed table-bordered" id="playList">
 						<thead>
-							<th>Title</th>
-							<th>Rating</th>
+							<th class="span2">Title</th>
+							<th class="span2">Rating</th>
 						</thead>
 						<tbody>
 							
@@ -47,7 +47,7 @@
 				</div>
 				
 				<div class="span8" id="mainContentArea">
-					<label class="span12"><small>Add YouTube song to playlist</small></label>
+					<small>Add YouTube song to playlist</small>
 					<div class="row-fluid">
 						<div class="span12 input-append">
 							<input class="input span10" id="songUrlField" type="text" placeholder="Enter YouTube URL here..." value="">
@@ -55,9 +55,7 @@
 						</div>
 					</div>
 					
-					<div class="row-fluid" id="alertArea">
-						
-					</div>
+					<div class="row-fluid" id="alertArea"></div>
 					
 					<div class="row-fluid">
 						<div class="span10 video-wrapper">
@@ -66,6 +64,18 @@
 									You need Flash player 8+ and JavaScript enabled to view this video.
 								</div>
 							</div>
+						</div>
+					</div>
+					
+					</br>
+					
+					<div class="row-fluid">
+						<div class="span2 offset8">
+							<input type="radio" class="rateStar" value="1"/>
+							<input type="radio" class="rateStar" value="2"/>
+							<input type="radio" class="rateStar" value="3"/>
+							<input type="radio" class="rateStar" value="4"/>
+							<input type="radio" class="rateStar" value="5"/>
 						</div>
 					</div>
 				</div>

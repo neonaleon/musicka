@@ -104,8 +104,8 @@ function handle_get_list_request(req, res) {
 }
 
 function handle_rate_song_request(req, res) {
-	client.query("UPDATE user_playlist SET rating = '"+req.query.fbid+"' WHERE id = '"+req.query.video+
-		"' AND song = "+req.query.rate+"");
+	client.query("UPDATE user_playlist SET rating = '"+req.body.rate+"' WHERE id = '"+req.body.fbid+
+		"' AND song = '"+req.body.video+"'");
 	res.send('OK');
 }
 
