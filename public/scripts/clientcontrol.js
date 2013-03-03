@@ -32,7 +32,7 @@ ClientControl.prototype.init = function() {
 	
 	// Load element functions
 	$('#'+MUSICKA.Element.ADD_SONG_BTN_ID).click(this._onAddSong.bind(this));
-	$('.rateStar').rating({ callback: self._setRating.bind(this) });
+	$('input.rateStar').rating({ callback: self._rateSong.bind(this) });
 	
 	// Retrieve playlist from server
 	this._getMyPlaylist();
@@ -65,7 +65,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 	if(arguments.length < 3) {
 		inform = true;
 	}
-	
+
 	var control = this;
 	$.ajax({
 		dataType: 'jsonp',
@@ -75,8 +75,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 				// Video is available
 				var videoID = control._parseURL(response.feed.entry[0].link[0].href);
 				if(!control._model.containsSong(videoID)) {
-					control._model.addSong(videoID);
-					
+					control._model.addSong(videoID, rate);
 					// Play video now if none are playing
 					if(!control._model.nowPlaying()) {
 						control._onPlaySong(videoID);
@@ -128,10 +127,16 @@ ClientControl.prototype._onAddSong = function() {
 }
 
 ClientControl.prototype._onRateSong = function(videoID, rate) {
+	var self = this;
 	$.ajax({
 		type : 'post',
 		url : "rate",
-		data : {video: videoID, fbid: session.userID, rate: rate}
+		data : {video: videoID, fbid: session.userID, rate: rate},
+		success: function () {
+			self._model.rateSong(videoID, rate);
+			var playlistRow = $('#'+videoID);
+			
+		},
 	});
 }
 
@@ -178,9 +183,8 @@ ClientControl.prototype._onPlaySong = function(id) {
 	if(videoID !== this._model.nowPlaying() && this._player) {
 		this._model.playSong(videoID);
 		this._player.loadVideoById(videoID);
+		this._updateRating(videoID);
 	}
-	
-	this._updateRating(id);
 }
 
 ClientControl.prototype._onRemoveSong = function(id) {
@@ -204,6 +208,10 @@ ClientControl.prototype._onRemoveSong = function(id) {
 	});
 }
 
+ClientControl.prototype._removeSong = function () {
+	
+}
+
 ClientControl.prototype._alert = function(alertType, alertText) {
 	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
 	var row = $('<div class=\"row-fluid\">');
@@ -212,14 +220,16 @@ ClientControl.prototype._alert = function(alertType, alertText) {
 	alertArea.append(row.append(alert.append(close)));
 }
 
-ClientControl.prototype._setRating = function(value, link) {
-	value = value || 0;
+ClientControl.prototype._rateSong = function(value, link) {
+	value = parseInt(value) || 0;
 	this._onRateSong(this._model.nowPlaying(), value);
 }
 
 ClientControl.prototype._updateRating = function(id) {
+	console.log(this._model._song(id));
 	var index = this._model._song(id).rating - 1;
-	if (index >= 0) $('input.rateStar').rating('select', index);
+	if (index == -1) $('input').rating('drain');
+	else $('input.rateStar').rating('select', index);
 }
 
 ClientControl.prototype.handleYTState = function(state) {

@@ -9,10 +9,12 @@ MusicPlayer.prototype.addSong = function(id, rate) {
 	var song = new Song(id);
 	this.playList.push(song);
 	this._playListHash[id] = song;
-	
+	song.rating = rate || 0;
+	/* this was never fired....
 	if(arguments >= 2) {
 		song.rating = rate;
 	}
+	*/
 }
 
 MusicPlayer.prototype.containsSong = function(id) {
@@ -51,13 +53,6 @@ MusicPlayer.prototype.playSong = function(id) {
 
 MusicPlayer.prototype.rateSong = function(id, rate) {
 	var song = this._song(id);
-	
-	if(rate > 1) {
-		rate = 1;
-	} else if(rate < 0) {
-		rate = 0;
-	}
-	
 	song.rating = rate;
 }
 
