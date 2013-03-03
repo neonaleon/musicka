@@ -5,11 +5,12 @@ function MusicPlayer() {
 	this._current		= -1;	// Array index of current song
 }
 
-MusicPlayer.prototype.addSong = function(id, rate) {
+MusicPlayer.prototype.addSong = function(id, title, rate) {
 	var song = new Song(id);
 	this.playList.push(song);
 	this._playListHash[id] = song;
 	song.rating = rate || 0;
+	song.title = title || 0;
 	/* this was never fired....
 	if(arguments >= 2) {
 		song.rating = rate;

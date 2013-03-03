@@ -75,7 +75,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 				// Video is available
 				var videoID = control._parseURL(response.feed.entry[0].link[0].href);
 				if(!control._model.containsSong(videoID)) {
-					control._model.addSong(videoID, rate);
+					control._model.addSong(videoID, response.feed.entry[0].title.$t, rate);
 					// Play video now if none are playing
 					if(!control._model.nowPlaying()) {
 						control._onPlaySong(videoID);
@@ -154,8 +154,6 @@ ClientControl.prototype._onRateSong = function(videoID, rate) {
 		data : {video: videoID, fbid: session.userID, rate: rate},
 		success: function () {
 			self._model.rateSong(videoID, rate);
-			var playlistRow = $('#'+videoID);
-			
 		},
 	});
 }
@@ -236,7 +234,7 @@ ClientControl.prototype._removeSong = function (id) {
 		videoID = id.data.video;
 	}
 	var self = this;
-	this._alertChoice('warning', $('#'+videoID)[0].innerText + ' from playlist?', 'Yes', 'No', {video:videoID} , self._onRemoveSong.bind(self));
+	this._alertChoice('warning', 'Remove \"' + self._model._song(videoID).title + '\" from playlist?', 'Yes', 'No', {video:videoID} , self._onRemoveSong.bind(self));
 }
 
 ClientControl.prototype._recommendSong = function (id) {
@@ -245,8 +243,25 @@ ClientControl.prototype._recommendSong = function (id) {
 		id.stopPropagation();
 		videoID = id.data.video;
 	}
-	console.log("RECOMMENDDD SONNGGG", videoID);
-	// launch recommendation dialog
+	this._showRecommendationDialog(videoID);
+}
+
+ClientControl.prototype._showRecommendationDialog = function (id) {
+	var self = this;
+	FB.ui({ method: 'apprequests',
+			title: 'Recommend',
+			message: "I'm recommending this song \"" + self._model._song(id).title + "\" to you. Hope you like it!",
+			filters: ['app_users', 'all', 'app_non_users'] },
+			requestCallback); 
+}
+
+function requestCallback( response ) {
+	if (null) {
+		return;
+	} else {
+		
+	}
+	console.log(response);
 }
 
 ClientControl.prototype._rateSong = function(value, link) {
