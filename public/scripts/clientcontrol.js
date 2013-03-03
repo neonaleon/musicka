@@ -83,17 +83,37 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					
 					// Add row to html view
 					var playList = $('#'+MUSICKA.Element.PLAYLIST_ID);
+					
+					var row = $('<li>');
+					row.attr('id', videoID);
+					
 					var title = $('<a>').html(response.feed.entry[0].title.$t);
 					title.attr('href', '#');
 					title.attr('onClick', 'return false;');
 					title.click({video: videoID}, control._onPlaySong.bind(control));
-					title = $('<td>').append(title);
-					var remove = $('<button class=\"btn btn-primary\">').html("Remove");
-					remove.click({video: videoID}, control._onRemoveSong.bind(control));
-					remove = $('<td>').append(remove);
-					var rating = $('<td>').html(rate);
-					var row = $('<tr>').append(title, rating, remove);
-					row.attr('id', videoID);
+					row.append(title);
+					
+					var recommend = $('<a>');
+					recommend.attr('href', '#');
+					recommend.attr('rel', 'tooltip');
+					recommend.attr('title', 'Recommend to a friend');
+					recommend.append($('<i class=\"icon-user\">'));
+					recommend.tooltip({ placement: 'right' });
+					recommend.click({ video: videoID }, control._recommendSong.bind(control));
+					
+					var remove = $('<a>');
+					remove.attr('href', '#');
+					remove.attr('rel', 'tooltip');
+					remove.attr('title', 'Delete');
+					remove.tooltip({ placement:'right' });
+					remove.append($('<i class=\"icon-trash\">'));
+					remove.click({ video: videoID }, control._removeSong.bind(control));
+					
+					var rowControls = $('<div>').append(recommend, remove);
+					rowControls.addClass('pull-right');
+					title.addClass('span11');
+					title.prepend(rowControls);
+					
 					playList.append(row);
 					
 					// Inform server of added song
@@ -208,8 +228,22 @@ ClientControl.prototype._onRemoveSong = function(id) {
 	});
 }
 
-ClientControl.prototype._removeSong = function () {
-	
+ClientControl.prototype._removeSong = function (id) {
+	var videoID = id;
+	if(typeof id !== 'string') {
+		id.stopPropagation();
+		videoID = id.data.video;
+	}
+	console.log("REMOVEEE SONNGGG", videoID);
+}
+
+ClientControl.prototype._recommendSong = function (id) {
+	var videoID = id;
+	if(typeof id !== 'string') {
+		id.stopPropagation();
+		videoID = id.data.video;
+	}
+	console.log("RECOMMENDDD SONNGGG", videoID);
 }
 
 ClientControl.prototype._alert = function(alertType, alertText) {
@@ -226,7 +260,6 @@ ClientControl.prototype._rateSong = function(value, link) {
 }
 
 ClientControl.prototype._updateRating = function(id) {
-	console.log(this._model._song(id));
 	var index = this._model._song(id).rating - 1;
 	if (index == -1) $('input').rating('drain');
 	else $('input.rateStar').rating('select', index);
