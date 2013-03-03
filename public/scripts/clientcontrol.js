@@ -204,6 +204,7 @@ ClientControl.prototype._onPlaySong = function(id) {
 		this._model.playSong(videoID);
 		this._player.loadVideoById(videoID);
 		this._updateRating(videoID);
+		this._updatePlaylist(videoID);
 	}
 }
 
@@ -245,6 +246,7 @@ ClientControl.prototype._recommendSong = function (id) {
 		videoID = id.data.video;
 	}
 	console.log("RECOMMENDDD SONNGGG", videoID);
+	// launch recommendation dialog
 }
 
 ClientControl.prototype._rateSong = function(value, link) {
@@ -256,6 +258,11 @@ ClientControl.prototype._updateRating = function(id) {
 	var index = this._model._song(id).rating - 1;
 	if (index == -1) $('input').rating('drain');
 	else $('input.rateStar').rating('select', index);
+}
+
+ClientControl.prototype._updatePlaylist = function(id) {
+	$('li.active').removeClass('active');
+	$('#'+id).addClass('active');
 }
 
 ClientControl.prototype._alert = function(alertType, alertText) {
