@@ -96,7 +96,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					var recommend = $('<a>');
 					recommend.attr('href', '#');
 					recommend.attr('rel', 'tooltip');
-					recommend.attr('title', 'Recommend to a friend');
+					recommend.attr('data-original-title', 'Recommend to a friend');
 					recommend.append($('<i class=\"icon-user\">'));
 					recommend.tooltip({ placement: 'right' });
 					recommend.click({ video: videoID }, control._recommendSong.bind(control));
@@ -104,7 +104,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					var remove = $('<a>');
 					remove.attr('href', '#');
 					remove.attr('rel', 'tooltip');
-					remove.attr('title', 'Delete');
+					remove.attr('data-original-title', 'Delete');
 					remove.tooltip({ placement:'right' });
 					remove.append($('<i class=\"icon-trash\">'));
 					remove.click({ video: videoID }, control._removeSong.bind(control));
@@ -234,7 +234,8 @@ ClientControl.prototype._removeSong = function (id) {
 		id.stopPropagation();
 		videoID = id.data.video;
 	}
-	console.log("REMOVEEE SONNGGG", videoID);
+	var self = this;
+	this._alertChoice('warning', $('#'+videoID)[0].innerText + ' from playlist?', 'Yes', 'No', {video:videoID} , self._onRemoveSong.bind(self));
 }
 
 ClientControl.prototype._recommendSong = function (id) {
@@ -246,14 +247,6 @@ ClientControl.prototype._recommendSong = function (id) {
 	console.log("RECOMMENDDD SONNGGG", videoID);
 }
 
-ClientControl.prototype._alert = function(alertType, alertText) {
-	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
-	var row = $('<div class=\"row-fluid\">');
-	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">').html(alertText);
-	var close = $('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;');
-	alertArea.append(row.append(alert.append(close)));
-}
-
 ClientControl.prototype._rateSong = function(value, link) {
 	value = parseInt(value) || 0;
 	this._onRateSong(this._model.nowPlaying(), value);
@@ -263,6 +256,29 @@ ClientControl.prototype._updateRating = function(id) {
 	var index = this._model._song(id).rating - 1;
 	if (index == -1) $('input').rating('drain');
 	else $('input.rateStar').rating('select', index);
+}
+
+ClientControl.prototype._alert = function(alertType, alertText) {
+	$('.alert').alert('close');
+	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
+	var row = $('<div class=\"row-fluid\">');
+	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">').html(alertText);
+	var close = $('<button type=\"button\" class=\"close\" data-dismiss=\"alert\">').html('&times;');
+	alertArea.append(row.append(alert.append(close)));
+}
+
+ClientControl.prototype._alertChoice = function(alertType, alertText, yesText, noText, data, handler) {
+	$('.alert').alert('close');
+	var alertArea = $('#'+MUSICKA.Element.ALERT_ID);
+	var row = $('<div class=\"row-fluid\">');
+	var alert = $('<div class=\"span10 alert alert-' + alertType + '\">').html(alertText);
+	var p = $('<p>');
+	var yesBtn = $('<a class=\"btn btn-primary \">').html(yesText);
+	var noBtn = $('<a class=\"btn\">').html(noText);
+	yesBtn.click(data, handler);
+	yesBtn.click(function(){$('.alert').alert('close')});
+	noBtn.click(function(){$('.alert').alert('close')});
+	alertArea.append(alert.append(p.append(yesBtn, noBtn)));
 }
 
 ClientControl.prototype.handleYTState = function(state) {
