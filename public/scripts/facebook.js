@@ -1,12 +1,8 @@
-var APP_ID = '<%= id %>';
-var APP_DOMAIN = '<%= domain %>';
-
-
 window.fbAsyncInit = function() {
 	// init the FB JS SDK
 	FB.init({
-		appId : APP_ID,
-		channelUrl : APP_DOMAIN + 'channel.html',
+		appId : MUSICKA.Properties.APP_ID,
+		channelUrl : MUSICKA.Properties.APP_DOMAIN + 'channel.html',
 		status : true,
 		cookie : true,
 		xfbml : true

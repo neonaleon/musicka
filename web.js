@@ -169,8 +169,8 @@ function handle_rate_song_request(req, res) {
 	res.send('OK');
 }
 
-function handle_js(req, res) {
-	res.render('facebook.ejs',
+function handle_define_js(req, res) {
+	res.render('define.ejs',
 		{id: FACEBOOK_APP_ID, domain: APP_DOMAIN});
 }
 
@@ -195,8 +195,8 @@ app.post('/auth/facebook/callback', passport.authenticate('facebook', {
 app.get('/', handle_request);
 app.post('/', handle_request);
 
-app.get('/scripts/facebook.js', handle_js);
-app.post('/scripts/facebook.js', handle_js);
+app.get('/scripts/define.js', handle_define_js);
+app.post('/scripts/define.js', handle_define_js);
 
 app.get('/add', handle_add_song_request);
 app.post('/add', handle_add_song_request);
