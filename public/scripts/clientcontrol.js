@@ -1,6 +1,7 @@
 function ClientControl(model) {
 	this._model = model;
 	this._player = null;
+	this._isInit = false;
 	
 	// Bind YouTube callbacks
 	var controller = this;
@@ -20,7 +21,21 @@ function ClientControl(model) {
 }
 
 ClientControl.prototype.init = function() {
+	if(this._isInit || session.userID === null) {
+		return;
+	}
+	
 	var self = this;
+	// Inform server of new token
+	$.ajax({
+		type		: 'post',
+		url			: "/auth/facebook",
+		data		: {fbid: session.userID, token: session.token},
+		success		: function(response) {
+			console.log("Access token updated");
+		}
+	});
+	
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always', scale : 'exactfit'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
@@ -37,8 +52,10 @@ ClientControl.prototype.init = function() {
 	// Retrieve playlist from server
 	this._getMyPlaylist();
 	
-	// TODO Test 3 recommendations
+	// TODO Test recommendations
 	this._getRecommend();
+	
+	this._isInit = true;
 }
 
 ClientControl.prototype._getRecommend = function(n) {
