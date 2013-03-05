@@ -251,8 +251,9 @@ ClientControl.prototype._showRecommendationDialog = function (id) {
 	FB.ui({ method: 'apprequests',
 			title: 'Recommend',
 			message: "I'm recommending this song \"" + self._model._song(id).title + "\" to you. Hope you like it!",
-			filters: ['app_users', 'all', 'app_non_users'] },
-			requestCallback); 
+			filters: ['app_users', 'all', 'app_non_users'],
+			data: {}, // could send YouTube URL here? http://developers.facebook.com/docs/reference/dialogs/requests/
+			}, requestCallback); 
 }
 
 function requestCallback( response ) {
