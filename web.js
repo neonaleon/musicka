@@ -24,7 +24,7 @@ client.connect();
 //   the user by ID when deserializing.  However, since this example does not
 //   have a database of user records, the complete Facebook profile is serialized
 //   and deserialized.
-passport.serializeUser(function(user, done) {
+/*passport.serializeUser(function(user, done) {
 	done(null, user);
 });
 
@@ -54,7 +54,7 @@ passport.use(new FacebookStrategy({
 		});
 		return done(null, profile);
 	});
-}));
+}));*/
 
 // create an express webserver
 var app = express();
@@ -72,8 +72,8 @@ app.configure(function() {
 	app.use(express.session({
 		secret : process.env.SESSION_SECRET || 'secret123'
 	}));
-	app.use(passport.initialize());
-	app.use(passport.session()); 
+	//app.use(passport.initialize());
+	//app.use(passport.session()); 
 });
 
 app.listen(PORT, function() {
@@ -107,6 +107,10 @@ function handle_recommend(req, res) {
 		graph.setAccessToken(token);
 		graph.fql(query, function(err, fres) {
 			var friendList = fres.data;
+			if(typeof friendList === 'undefined') {
+				res.json({list: []});
+				return;
+			}
 			var friends = [];
 			for(var i = 0; i < friendList.length; i++) {
 				friends.push(friendList[i].uid);
@@ -169,15 +173,46 @@ function handle_rate_song_request(req, res) {
 	res.send('OK');
 }
 
-function handle_js(req, res) {
-	res.render('facebook.ejs',
+function handle_define_js(req, res) {
+	res.render('define.ejs',
 		{id: FACEBOOK_APP_ID, domain: APP_DOMAIN});
 }
 
-app.get('/auth/facebook', passport.authenticate('facebook'));
-app.post('/auth/facebook', passport.authenticate('facebook'));
+function handle_user_token(req, res) {
+	var userID	= req.body.fbid;
+	var token	= req.body.token;
+	
+	// Extend token
+    graph.get(	"oauth/access_token?grant_type=fb_exchange_token&client_id="
+    			+ FACEBOOK_APP_ID + "&client_secret=" + FACEBOOK_APP_SECRET + 
+    			"&fb_exchange_token=" + token,
+		function(err, fres) {
+			var done = function() {
+				res.send('OK');
+			}
+			addToken(userID, fres.access_token, done);
+    	});
+}
 
-app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+function addToken(fbid, token, done) {
+	var query = client.query("SELECT token FROM user_token WHERE id = '" + fbid + "'");
+	query.on('end', function(result) {
+		var query2;
+		if(result.rowCount >= 1) {
+			query2 = client.query("UPDATE user_token SET token = '"+token+"' WHERE id = '"+fbid+"'");
+		} else {
+			query2 = client.query("INSERT INTO user_token(id, token) values('"+fbid+"', '"+token+"')");
+		}
+		query2.on('end', function(result) {
+			done();
+		});
+	});
+}
+
+app.get('/auth/facebook', handle_user_token);
+app.post('/auth/facebook', handle_user_token);
+
+/*app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 	failureRedirect : '/login'
 	
 }), function(req, res) {
@@ -190,13 +225,13 @@ app.post('/auth/facebook/callback', passport.authenticate('facebook', {
 }), function(req, res) {
 	// Successful authentication, redirect to app
 	res.redirect('/');
-});
+});*/
 
 app.get('/', handle_request);
 app.post('/', handle_request);
 
-app.get('/scripts/facebook.js', handle_js);
-app.post('/scripts/facebook.js', handle_js);
+app.get('/scripts/define.js', handle_define_js);
+app.post('/scripts/define.js', handle_define_js);
 
 app.get('/add', handle_add_song_request);
 app.post('/add', handle_add_song_request);

@@ -1,17 +1,30 @@
-var APP_ID = '<%= id %>';
-var APP_DOMAIN = '<%= domain %>';
-
-
 window.fbAsyncInit = function() {
 	// init the FB JS SDK
 	FB.init({
-		appId : APP_ID,
-		channelUrl : APP_DOMAIN + 'channel.html',
+		appId : MUSICKA.Properties.APP_ID,
+		channelUrl : MUSICKA.Properties.APP_DOMAIN + 'channel.html',
 		status : true,
 		cookie : true,
 		xfbml : true
 	});
 
+	FB.getLoginStatus(function(response) {
+		if (response.status === 'connected') {
+			//alert('fb client connected');
+			session.userID	= response.authResponse.userID;
+			session.token	= response.authResponse.accessToken;
+			if(clientController) {
+				clientController.init();
+			}
+		} else if (response.status === 'not_authorized') {
+			//alert('fb client not auth');
+			login();
+		} else {
+			//alert('fb client not logged in');
+			login();
+		}
+	});
+	
 	/*FB.Event.subscribe('auth.login', function(response) {
 		if (response.status === 'connected') {
 			//alert('fb client connected');
@@ -30,23 +43,6 @@ window.fbAsyncInit = function() {
 		}
 	});*/
 	
-	FB.getLoginStatus(function(response) {
-		if (response.status === 'connected') {
-			//alert('fb client connected');
-			session.userID = response.authResponse.userID;
-			if(!session.isControlInit && clientController) {
-				clientController.init();
-				session.isControlInit = true;
-			}
-		} else if (response.status === 'not_authorized') {
-			//alert('fb client not auth');
-			login();
-		} else {
-			//alert('fb client not logged in');
-			login();
-		}
-	});
-	
 	FB.Canvas.setAutoGrow();
 };
 
@@ -63,10 +59,21 @@ window.fbAsyncInit = function() {
 	}(document, /*debug*/false));
 	
 function login() {
-	top.location = "auth/facebook/";
+	FB.login(function(response) {
+		if (response.authResponse) {
+			// connected
+			session.userID = response.authResponse.userID;
+			if(clientController) {
+				clientController.init();
+			}
+		} else {
+			// cancelled
+			window.location = window.location;
+		}
+	});
 }
 
 var session = {
-	userID 			: null,
-	isControlInit	: false
+	userID	: null,
+	token	: null,
 }
