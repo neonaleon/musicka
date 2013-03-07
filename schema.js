@@ -1,5 +1,5 @@
 var pg = require('pg');
-var connectionString = process.env.DATABASE_URL || 'postgres://postgres:$r2d2c3po@localhost:5432/musicka-local' 
+var connectionString = process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local' 
 //'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
 var client, query;
 client = new pg.Client(connectionString);
