@@ -33,10 +33,13 @@ ClientControl.prototype.init = function() {
 		data		: {fbid: session.userID, token: session.token},
 		success		: function(response) {
 			console.log("Access token updated");
-			FB.api(args.request_ids + '_' + session.userID,
-			function( response ) {
-				console.log(response);
-			});
+			for (var i in requests) {
+				console.log('!requesting!', requests[i] + '_' + session.userID);
+				FB.api(requests[i] + '_' + session.userID,
+					function( response ) {
+						console.log(response);
+					});
+			};
 		}
 	});
 	
@@ -57,8 +60,10 @@ ClientControl.prototype.init = function() {
 	
 	var starting_video = MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID;
 	
+	var requests = undefined;
 	if (args.request_ids !== undefined) {
-		console.log('!!!', args.request_ids + '_' + session.userID);
+		requests = args.request_ids.split('%2C'); // %2C is ,
+		console.log('!!!', requests);
 	} else {
 		console.log('!!!', 'not a request');
 	}
