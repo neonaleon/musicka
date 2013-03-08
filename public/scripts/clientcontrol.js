@@ -33,13 +33,40 @@ ClientControl.prototype.init = function() {
 		data		: {fbid: session.userID, token: session.token},
 		success		: function(response) {
 			console.log("Access token updated");
+			FB.api(args.request_ids + '_' + session.userID,
+			function( response ) {
+				console.log(response);
+			});
 		}
 	});
+	
+	//console.log('!!!', document.URL);
+	var query = document.location.search.substring(1).split('&');
+	var args = {};
+
+	for (i=0; i < query.length; i++) {
+	    var arg = decodeURI(query[i]);
+	
+	    if (arg.indexOf('=') == -1) {
+	        args[arg.trim()] = true;
+	    } else {
+	        var kvp = arg.split('=');
+	        args[kvp[0].trim()] = kvp[1].trim();
+	    }
+	}
+	
+	var starting_video = MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID;
+	
+	if (args.request_ids) {
+		console.log('!!!', args.request_ids + '_' + session.userID);
+	} else {
+		console.log('!!!', 'not a request');
+	}
 	
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always', scale : 'exactfit'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
-	swfobject.embedSWF('//www.youtube.com/v/' + MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID + '?enablejsapi=1&playerapiid=ytplayer&version=3',
+	swfobject.embedSWF('//www.youtube.com/v/' + starting_video + '?enablejsapi=1&playerapiid=ytplayer&version=3',
 		MUSICKA.Element.YT_PLAYER_ID,
 		MUSICKA.Properties.YTPLAYER_WIDTH,
 		MUSICKA.Properties.YTPLAYER_HEIGHT,
@@ -48,6 +75,12 @@ ClientControl.prototype.init = function() {
 	// Load element functions
 	$('#'+MUSICKA.Element.ADD_SONG_BTN_ID).click(this._onAddSong.bind(this));
 	$('input.rateStar').rating({ callback: self._rateSong.bind(this) });
+	
+	// Set elements to same height as embedded video player
+	//$('#playListDiv').css('height', document.body.offsetHeight*0.5);
+    //$('#recommendListDiv').css('height', document.body.offsetHeight*0.5);
+    $('#playListDiv').css('height', $('#mytplayer').css('height'));
+    $('#recommendListDiv').css('height', $('#mytplayer').css('height'));
 	
 	// Retrieve playlist from server
 	this._getMyPlaylist();
@@ -105,7 +138,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					row.attr('id', videoID);
 					
 					var title = $('<a>').html(response.feed.entry[0].title.$t);
-					title.attr('href', '#');
+					title.attr('href', response.feed.entry[0].link[0].href);
 					title.attr('onClick', 'return false;');
 					title.click({video: videoID}, control._onPlaySong.bind(control));
 					row.append(title);
@@ -128,7 +161,6 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 					
 					var rowControls = $('<div>').append(recommend, remove);
 					rowControls.addClass('pull-right');
-					title.addClass('span11');
 					title.prepend(rowControls);
 					
 					playList.append(row);
@@ -269,12 +301,12 @@ ClientControl.prototype._showRecommendationDialog = function (id) {
 			title: 'Recommend',
 			message: "I'm recommending this song \"" + self._model._song(id).title + "\" to you. Hope you like it!",
 			filters: ['app_users', 'all', 'app_non_users'],
-			data: {}, // could send YouTube URL here? http://developers.facebook.com/docs/reference/dialogs/requests/
-			}, requestCallback); 
+			data: 'www.youtube.com/watch?v=' + id, // could send YouTube URL here? http://developers.facebook.com/docs/reference/dialogs/requests/
+			}, requestCallback);
 }
 
 function requestCallback( response ) {
-	if (null) {
+	if (response == null) {
 		return;
 	} else {
 		
