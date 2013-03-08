@@ -57,7 +57,7 @@ ClientControl.prototype.init = function() {
 	
 	var starting_video = MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID;
 	
-	if (args.request_ids) {
+	if (args.request_ids !== undefined) {
 		console.log('!!!', args.request_ids + '_' + session.userID);
 	} else {
 		console.log('!!!', 'not a request');
