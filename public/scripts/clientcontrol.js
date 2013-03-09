@@ -33,13 +33,13 @@ ClientControl.prototype.init = function() {
 		data		: {fbid: session.userID, token: session.token},
 		success		: function(response) {
 			console.log("Access token updated");
-			for (var i in requests) {
+			/*for (var i in requests) {
 				console.log('!requesting!', requests[i] + '_' + session.userID);
 				FB.api(requests[i] + '_' + session.userID,
 					function( response ) {
 						console.log(response);
 					});
-			};
+			};*/
 		}
 	});
 	
@@ -60,13 +60,13 @@ ClientControl.prototype.init = function() {
 	
 	var starting_video = MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID;
 	
-	var requests = undefined;
+	/*var requests = undefined;
 	if (args.request_ids !== undefined) {
 		requests = args.request_ids.split('%2C'); // %2C is ,
 		console.log('!!!', requests);
 	} else {
 		console.log('!!!', 'not a request');
-	}
+	}*/
 	
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always', scale : 'exactfit'};
@@ -91,7 +91,10 @@ ClientControl.prototype.init = function() {
 	this._getMyPlaylist();
 	
 	// TODO Test recommendations
-	this._getRecommend();
+	//this._getRecommend();
+	
+	// Add app request view controller
+	var requestController = new RecTableControl(this);
 	
 	this._isInit = true;
 }
@@ -126,63 +129,66 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 		dataType: 'jsonp',
 		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,
 		success: function(response) {
-			if(typeof response.feed.entry !== 'undefined') {
-				// Video is available
-				var videoID = control._parseURL(response.feed.entry[0].link[0].href);
-				if(!control._model.containsSong(videoID)) {
-					control._model.addSong(videoID, response.feed.entry[0].title.$t, rate);
-					// Play video now if none are playing
-					if(!control._model.nowPlaying()) {
-						control._onPlaySong(videoID);
-					}
-					
-					// Add row to html view
-					var playList = $('#'+MUSICKA.Element.PLAYLIST_ID);
-					
-					var row = $('<li>');
-					row.attr('id', videoID);
-					
-					var title = $('<a>').html(response.feed.entry[0].title.$t);
-					title.attr('href', response.feed.entry[0].link[0].href);
-					title.attr('onClick', 'return false;');
-					title.click({video: videoID}, control._onPlaySong.bind(control));
-					row.append(title);
-					
-					var recommend = $('<a>');
-					recommend.attr('href', '#');
-					recommend.attr('rel', 'tooltip');
-					recommend.attr('data-original-title', 'Recommend to a friend');
-					recommend.append($('<i class=\"icon-user\">'));
-					recommend.tooltip({ placement: 'right' });
-					recommend.click({ video: videoID }, control._recommendSong.bind(control));
-					
-					var remove = $('<a>');
-					remove.attr('href', '#');
-					remove.attr('rel', 'tooltip');
-					remove.attr('data-original-title', 'Delete');
-					remove.tooltip({ placement:'right' });
-					remove.append($('<i class=\"icon-trash\">'));
-					remove.click({ video: videoID }, control._removeSong.bind(control));
-					
-					var rowControls = $('<div>').append(recommend, remove);
-					rowControls.addClass('pull-right');
-					title.prepend(rowControls);
-					
-					playList.append(row);
-					
-					// Inform server of added song
-					if(!inform) {
-						return;
-					}
-					$.ajax({
-						dataType : 'POST',
-						url : "add",
-						data : {video: videoID, fbid: session.userID}
-					});
-				}
-			} else {
+			if(typeof response.feed.entry === 'undefined') {
 				control._alert('error', "YouTube video does not exist");
+				return;
 			}
+			
+			// Video is available
+			var videoID = control._parseURL(response.feed.entry[0].link[0].href);
+			if(control._model.containsSong(videoID)) {
+				return;
+			}
+			
+			control._model.addSong(videoID, response.feed.entry[0].title.$t, rate);
+			// Play video now if none are playing
+			if(!control._model.nowPlaying()) {
+				control._onPlaySong(videoID);
+			}
+			
+			// Add row to html view
+			var playList = $('#'+MUSICKA.Element.PLAYLIST_ID);
+			
+			var row = $('<li>');
+			row.attr('id', videoID);
+			
+			var title = $('<a>').html(response.feed.entry[0].title.$t);
+			title.attr('href', response.feed.entry[0].link[0].href);
+			title.attr('onClick', 'return false;');
+			title.click({video: videoID}, control._onPlaySong.bind(control));
+			row.append(title);
+			
+			var recommend = $('<a>');
+			recommend.attr('href', '#');
+			recommend.attr('rel', 'tooltip');
+			recommend.attr('data-original-title', 'Recommend to a friend');
+			recommend.append($('<i class=\"icon-user\">'));
+			recommend.tooltip({ placement: 'right' });
+			recommend.click({ video: videoID }, control._recommendSong.bind(control));
+			
+			var remove = $('<a>');
+			remove.attr('href', '#');
+			remove.attr('rel', 'tooltip');
+			remove.attr('data-original-title', 'Delete');
+			remove.tooltip({ placement:'right' });
+			remove.append($('<i class=\"icon-trash\">'));
+			remove.click({ video: videoID }, control._removeSong.bind(control));
+			
+			var rowControls = $('<div>').append(recommend, remove);
+			rowControls.addClass('pull-right');
+			title.prepend(rowControls);
+			
+			playList.append(row);
+			
+			// Inform server of added song
+			if(!inform) {
+				return;
+			}
+			$.ajax({
+				dataType : 'POST',
+				url : "add",
+				data : {video: videoID, fbid: session.userID}
+			});
 		}
 	});
 }
@@ -306,7 +312,7 @@ ClientControl.prototype._showRecommendationDialog = function (id) {
 			title: 'Recommend',
 			message: "I'm recommending this song \"" + self._model._song(id).title + "\" to you. Hope you like it!",
 			filters: ['app_users', 'all', 'app_non_users'],
-			data: 'www.youtube.com/watch?v=' + id, // could send YouTube URL here? http://developers.facebook.com/docs/reference/dialogs/requests/
+			data: id, // could send YouTube URL here? http://developers.facebook.com/docs/reference/dialogs/requests/
 			}, requestCallback);
 }
 

@@ -1,6 +1,4 @@
 var express				= require('express');
-var passport			= require('passport');
-var FacebookStrategy	= require('passport-facebook').Strategy;
 var pg					= require('pg');
 var graph				= require('fbgraph');
 
@@ -15,46 +13,6 @@ var PORT				= process.env.PORT || 3000;
 // Initialise postgres connection
 var client = new pg.Client(PG_CONNECT_STR);
 client.connect();
-
-
-// Passport session setup.
-//   To support persistent login sessions, Passport needs to be able to
-//   serialize users into and deserialize users out of the session.  Typically,
-//   this will be as simple as storing the user ID when serializing, and finding
-//   the user by ID when deserializing.  However, since this example does not
-//   have a database of user records, the complete Facebook profile is serialized
-//   and deserialized.
-/*passport.serializeUser(function(user, done) {
-	done(null, user);
-});
-
-passport.deserializeUser(function(obj, done) {
-	done(null, obj);
-});
-
-// Use the FacebookStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Facebook
-//   profile), and invoke a callback with a user object.
-passport.use(new FacebookStrategy({
-	clientID : FACEBOOK_APP_ID,
-	clientSecret : FACEBOOK_APP_SECRET,
-	callbackURL : APP_DOMAIN + 'auth/facebook/callback'
-}, function(accessToken, refreshToken, profile, done) {
-	// asynchronous verification, for effect...
-	process.nextTick(function() {
-		var query = client.query("SELECT token FROM user_token WHERE id = '"+profile.id+"'");
-		query.on('end', function(result) {
-			var query2;
-			if(result.rowCount >= 1) {
-				query2 = client.query("UPDATE user_token SET token = '"+accessToken+"' WHERE id = '"+profile.id+"'");
-			} else {
-				query2 = client.query("INSERT INTO user_token(id, token) values('"+profile.id+"', '"+accessToken+"')");
-			}
-		});
-		return done(null, profile);
-	});
-}));*/
 
 // create an express webserver
 var app = express();
@@ -72,8 +30,6 @@ app.configure(function() {
 	app.use(express.session({
 		secret : process.env.SESSION_SECRET || 'secret123'
 	}));
-	//app.use(passport.initialize());
-	//app.use(passport.session()); 
 });
 
 app.listen(PORT, function() {
@@ -174,6 +130,7 @@ function handle_rate_song_request(req, res) {
 }
 
 function handle_define_js(req, res) {
+	res.set('Content-Type', 'text/javascript');
 	res.render('define.ejs',
 		{id: FACEBOOK_APP_ID, domain: APP_DOMAIN});
 }
@@ -211,21 +168,6 @@ function addToken(fbid, token, done) {
 
 app.get('/auth/facebook', handle_user_token);
 app.post('/auth/facebook', handle_user_token);
-
-/*app.get('/auth/facebook/callback', passport.authenticate('facebook', {
-	failureRedirect : '/login'
-	
-}), function(req, res) {
-	// Successful authentication, redirect to app
-	res.redirect('/');
-});
-app.post('/auth/facebook/callback', passport.authenticate('facebook', {
-	failureRedirect : '/login'
-	
-}), function(req, res) {
-	// Successful authentication, redirect to app
-	res.redirect('/');
-});*/
 
 app.get('/', handle_request);
 app.post('/', handle_request);

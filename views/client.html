@@ -13,6 +13,9 @@
 		<script src="scripts/song.js"></script>
 		<script src="scripts/musicplayer.js"></script>
 		<script src="scripts/clientcontrol.js"></script>
+		<script src="scripts/recommend.js"></script>
+		<script src="scripts/reccellcontrol.js"></script>
+		<script src="scripts/rectablecontrol.js"></script>
 		<!-- Style -->
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap-responsive.css">
@@ -27,20 +30,28 @@
 		<div id="fb-root"></div>
 		<script src="scripts/facebook.js"></script>
 		<div class="container-fluid">
+			<!-- Header
 			<div class="row-fluid">
 				<div class="page-header">
 					<h1 class="offset4">Musicka<small> Social Music Recommender</small></h1>
 				</div>
-			</div>
+			</div> -->
 			<div class="row-fluid">
 				
 				<div class="span4" id="leftContentArea">
 					
 					<div class="row-fluid"><p class="nav-header">Your playlist</p></div>
-					
 					<div class="row-fluid">
 						<div style="height:380px; overflow:auto">
 							<ul class="nav nav-list" id="playList">
+							</ul>
+						</div>
+					</div>
+					
+					<div class="row-fluid"><p class="nav-header">Recommended for you</p></div>
+					<div class="row-fluid">
+						<div style="height:380px; overflow:auto">
+							<ul class="nav nav-list" id="requestList">
 							</ul>
 						</div>
 					</div>
