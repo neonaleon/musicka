@@ -19,12 +19,11 @@ RecTableControl.prototype.onGetRequests = function() {
 			}
 			
 			var model = new Recommend(req.data, req.id, req.from.name, req.from.id);
-			model.onload = function() {
-				var cell = new RecCellControl(self, model);
-				self._cellList.push(cell);
-				self._view.append(cell.view);
-			};
 			self._recList[req.id] = model;
+			
+			var cell = new RecCellControl(self, model);
+			self._cellList.push(cell);
+			self._view.append(cell.view);
 		}
 	});
 }

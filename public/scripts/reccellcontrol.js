@@ -2,9 +2,12 @@ function RecCellControl(parent, model) {
 	this._parent = parent;
 	this._model = model;
 	this.view = $('<li>');
-	
+	this._model.onload = this._initUI.bind(this);
+}
+
+RecCellControl.prototype._initUI = function() {
 	// TODO fix UI
-	var thumbnail = $('<div>').append(model._videoImg);
+	var thumbnail = $('<div>').append(this._model._videoImg);
 	thumbnail.addClass('pull-left');
 	this.view.append(thumbnail);
 	
@@ -14,12 +17,12 @@ function RecCellControl(parent, model) {
 	remove.attr('data-original-title', 'Remove');
 	remove.tooltip({ placement:'right' });
 	remove.append($('<i class=\"icon-remove-sign\">'));
-	remove.click({ cell: this }, parent.onRemoveSong.bind(parent));
+	remove.click({ cell: this }, this._parent.onRemoveSong.bind(this._parent));
 	
-	var title = $('<a>').html(model._title);
+	var title = $('<a>').html(this._model._title);
 	title.attr('onClick', 'return false;');
 	title.attr('href', '#');
-	title.click({ cell: this }, parent.onPlaySong.bind(parent));
+	title.click({ cell: this }, this._parent.onPlaySong.bind(this._parent));
 	this.view.append(title);
 	
 	var rowControls = $('<div>').append(remove);
@@ -29,18 +32,18 @@ function RecCellControl(parent, model) {
 	var addSong = $('<a>').html('Add');
 	addSong.attr('href', '#');
 	addSong.attr('onClick', 'return false;');
-	addSong.click({ cell: this }, parent.onAddSong.bind(parent));
+	addSong.click({ cell: this }, this._parent.onAddSong.bind(this._parent));
 	this.view.append(addSong);
 	
-	if(model._from === null) {
+	if(this._model._from === null) {
 		return;
 	}
 	
 	var sender = $('<div>').html('from ');
-	var senderURL = $('<a>').html(model._from);
+	var senderURL = $('<a>').html(this._model._from);
 	senderURL.attr('href', '#');
 	senderURL.click(function() {
-		window.open(MUSICKA.Properties.FB_PATH + model._fromID, '_blank');
+		window.open(MUSICKA.Properties.FB_PATH + this._model._fromID, '_blank');
 	});
 	sender.append(senderURL);
 	this.view.append(sender);
