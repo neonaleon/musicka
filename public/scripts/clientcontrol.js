@@ -1,6 +1,7 @@
 function ClientControl(model) {
 	this._model = model;
 	this._player = null;
+	this.toLoad = 0; // the number of songs in the playlist to load on init
 	this._isInit = false;
 	
 	// Bind YouTube callbacks
@@ -60,14 +61,6 @@ ClientControl.prototype.init = function() {
 	
 	var starting_video = MUSICKA.Properties.YTPLAYER_DEFAULT_VIDEOID;
 	
-	/*var requests = undefined;
-	if (args.request_ids !== undefined) {
-		requests = args.request_ids.split('%2C'); // %2C is ,
-		console.log('!!!', requests);
-	} else {
-		console.log('!!!', 'not a request');
-	}*/
-	
 	// Load YouTube player
 	var params = {allowScriptAccess : 'always', scale : 'exactfit'};
 	var atts = {id : MUSICKA.Properties.YTPLAYER};
@@ -97,8 +90,25 @@ ClientControl.prototype.init = function() {
 	var requestController = new RecTableControl(this);
 	
 	this._isInit = true;
+	
+	//nest.list_genres(handler1.bind(this)); //416
+	//nest.list_mood_terms(handler1.bind(this)); //71
+	//nest.list_style_terms(handler1); //1264
+	//nest.search_song({ combined: "lady gaga poker face", results:1 }, handler1); // combined means search artist + title
+	
+	/*var requests = undefined;
+	if (args.request_ids !== undefined) {
+		requests = args.request_ids.split('%2C'); // %2C is ,
+		console.log('!!!', requests);
+	} else {
+		console.log('!!!', 'not a request');
+	}*/
 }
 
+function handler1 (response) {
+	console.log(response);
+}
+/*
 ClientControl.prototype._getRecommend = function(n) {
 	var count = n || 1;
 	$.ajax({
@@ -116,7 +126,7 @@ ClientControl.prototype._getRecommend = function(n) {
 		}
 	});
 }
-
+*/
 ClientControl.prototype._addSongModelView = function(videoID, rating, informServer) {
 	var inform = informServer;
 	var rate = rating || 0;
@@ -180,6 +190,9 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 			
 			playList.append(row);
 			
+			control.toLoad -= 1;
+			if (control.toLoad == 0) { control._onInitLoad(); }
+			
 			// Inform server of added song
 			if(!inform) {
 				return;
@@ -236,6 +249,7 @@ ClientControl.prototype._getMyPlaylist = function() {
 		url			: "getlist",
 		data		: {fbid: session.userID},
 		success		: function(response) {
+			control.toLoad = response.list.length;
 			for(var i = 0; i < response.list.length; i++) {
 				// Add each song
 				var videoID = response.list[i].v;
@@ -250,6 +264,10 @@ ClientControl.prototype._getMyPlaylist = function() {
 			}
 		}
 	});
+}
+
+ClientControl.prototype._onInitLoad = function () {
+	sysrecommender.init(this._model);
 }
 
 ClientControl.prototype._onPlaySong = function(id) {

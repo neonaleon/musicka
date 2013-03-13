@@ -76,10 +76,6 @@ MusicPlayer.prototype.nowPlaying = function() {
 	return false;
 }
 
-MusicPlayer.prototype.getNextRecommend = function() {
-	
-}
-
 MusicPlayer.prototype._song = function(id) {
 	if(typeof id === 'number') {
 		return this.playList[id];

@@ -41,6 +41,7 @@ function handle_request(req, res) {
 }
 
 // Good luck
+/*
 function handle_recommend(req, res) {
 	var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
 	var user	= req.body.fbid;
@@ -93,6 +94,7 @@ function handle_recommend(req, res) {
 		});
 	});
 }
+*/
 
 function handle_add_song_request(req, res) {
 	client.query("INSERT INTO user_playlist(id, song, rating) values('"+req.query.fbid+"', '"+req.query.video+"', 0)");
@@ -166,6 +168,12 @@ function addToken(fbid, token, done) {
 	});
 }
 
+/* Recommendations */
+function handle_recommend_store (req, res) {
+	var userID	= req.body.fbid;
+	client.query("INSERT INTO playlist_vectors VALUES (" + ")";
+}
+
 app.get('/auth/facebook', handle_user_token);
 app.post('/auth/facebook', handle_user_token);
 
@@ -187,5 +195,5 @@ app.post('/getlist', handle_get_list_request);
 app.get('/rate', handle_rate_song_request);
 app.post('/rate', handle_rate_song_request);
 
-app.get('/recommend', handle_recommend);
-app.post('/recommend', handle_recommend);
+app.get('/recommend/store', handle_recommend_store);
+app.post('/recommend/store', handle_recommend_store);
