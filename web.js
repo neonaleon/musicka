@@ -165,6 +165,7 @@ function addToken(fbid, token, done) {
 }
 
 /* Recommendations */
+/*
 function handle_recommend_store (req, res) {
 	var userID	= req.body.fbid;
 	var array = req.body.array;
@@ -231,6 +232,7 @@ function handle_recommend_retrieve_friends (req, res) {
 		});
 	});
 }
+*/
 
 app.get('/auth/facebook', handle_user_token);
 app.post('/auth/facebook', handle_user_token);
@@ -252,7 +254,7 @@ app.post('/getlist', handle_get_list_request);
 
 app.get('/rate', handle_rate_song_request);
 app.post('/rate', handle_rate_song_request);
-
+/*
 app.get('/recommend/store', handle_recommend_store);
 app.post('/recommend/store', handle_recommend_store);
 
@@ -261,3 +263,4 @@ app.post('/recommend/retrieve', handle_recommend_retrieve);
 
 app.get('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
 app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
+*/
