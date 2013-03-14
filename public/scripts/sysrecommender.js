@@ -7,6 +7,11 @@ var sysrecommender = {
 	playlist_vector: undefined,
 	norm_playlist_vector: undefined,
 	song_vectors: {},
+	
+	friends: [], // ordered list, ascending order of relevance
+	friend_playlist_vectors: {}, // userID: playlist vector
+	
+	
 	acoustic_attributes: ['danceability', 'energy', 'speechiness'],
 	num_acoustic_attributes: 3,
 	num_equivalence_classes: 10,
@@ -75,7 +80,20 @@ sysrecommender.retrieve_playlist_vector = function ( userID ) {
 			fbid: userID,
 		},
 		success	: function (response) {
-			console.log("retrieve : " + response);	
+			console.log("retrieve : ", response);	
+		}
+	});
+}
+
+sysrecommender.get_friends = function () {
+	$.ajax({
+		type	: 'post',
+		url		: 'recommend/retrieve_friends',
+		data	: {
+			fbid: session.userID,
+		},
+		success	: function (response) {
+			console.log("retrieve : ", response);	
 		}
 	});
 }
@@ -86,8 +104,10 @@ sysrecommender.get_recommendation = function () {
 	if (this.norm_playlist_vector == undefined) {
 		this.norm_playlist_vector = this.playlist_vector.toUnitVector();
 	}
-	this.save_playlist_vector();
-	this.retrieve_playlist_vector(session.userID);
+	// testing
+	//this.save_playlist_vector();
+	//this.retrieve_playlist_vector(session.userID);
+	this.get_friends();
 }
 
 

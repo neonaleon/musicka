@@ -46,10 +46,6 @@ function handle_recommend(req, res) {
 	var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
 	var user	= req.body.fbid;
 	var token	= null;
-	var count	= 1;
-	if(typeof req.query.n !== 'undefined') {
-		count = parseInt(req.query.n);
-	}
 	
 	var tokenQuery = client.query("SELECT token FROM user_token WHERE id = '" + user + "'");
 	tokenQuery.on('row', function(row) {
@@ -201,6 +197,41 @@ function handle_recommend_retrieve (req, res) {
 	});
 }
 
+function handle_recommend_retrieve_friends (req, res) {
+	var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
+	var user	= req.body.fbid;
+	var token	= null;
+	
+	var tokenQuery = client.query("SELECT token FROM user_token WHERE id = '" + user + "'");
+	tokenQuery.on('row', function(row) {
+		token = row.token;
+	});
+	tokenQuery.on('end', function(result) {
+		if(token === null) {
+			res.redirect('/auth/facebook');
+			return;
+		}
+		graph.setAccessToken(token);
+		graph.fql(query, function(err, fres) {
+			var friendList = fres.data;
+			if(typeof friendList === 'undefined') {
+				res.json( { list: [] } ); // handle another way...
+				return;
+			}
+			var response_object = {};
+			for (var i in friendList) {
+				var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id='" + friendList[i].uid + "'");
+				query_friend_vector.on('row', function (row) {
+					response_object[row.id] = row.vector;
+				})
+				query_friend_vector.on('end', function (result) {
+					res.json(response_object);
+				})
+			}
+		});
+	});
+}
+
 app.get('/auth/facebook', handle_user_token);
 app.post('/auth/facebook', handle_user_token);
 
@@ -227,3 +258,5 @@ app.post('/recommend/store', handle_recommend_store);
 
 app.get('/recommend/retrieve', handle_recommend_retrieve);
 app.post('/recommend/retrieve', handle_recommend_retrieve);
+
+app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends)
