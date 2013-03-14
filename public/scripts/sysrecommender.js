@@ -107,5 +107,5 @@ sysrecommender.get_recommendation = function () {
 	// testing
 	//this.save_playlist_vector();
 	//this.retrieve_playlist_vector(session.userID);
-	//this.get_friends();
+	this.get_friends();
 }
