@@ -171,7 +171,34 @@ function addToken(fbid, token, done) {
 /* Recommendations */
 function handle_recommend_store (req, res) {
 	var userID	= req.body.fbid;
-	client.query("INSERT INTO playlist_vectors VALUES (" + ")";
+	var array = req.body.array;
+	for (var i in array) {
+		array[i] = parseInt(array[i]);
+	}
+	var query = client.query("SELECT vector FROM playlist_vectors WHERE id = '" + userID + "'");
+	query.on('end', function(result) {
+		var query2;
+		if(result.rowCount >= 1) {
+			query2 = client.query("UPDATE playlist_vectors SET vector = ARRAY["+ array + "] WHERE id = '"+ userID +"'");
+		} else {
+			query2 = client.query("INSERT INTO playlist_vectors(id, vector) values('" + userID + "', ARRAY[" + array + "])");
+		}
+		query2.on('end', function(result) {
+			res.send('OK');
+		});
+	});
+}
+
+function handle_recommend_retrieve (req, res) {
+	var userID	= req.body.fbid;
+	var query = client.query("SELECT vector FROM playlist_vectors WHERE id = '"+userID+"'");
+	var array = undefined;
+	query.on('row', function(row) {
+		array = row.vector;
+	});
+	query.on('end', function(result) {
+		res.json(array);
+	});
 }
 
 app.get('/auth/facebook', handle_user_token);
@@ -197,3 +224,6 @@ app.post('/rate', handle_rate_song_request);
 
 app.get('/recommend/store', handle_recommend_store);
 app.post('/recommend/store', handle_recommend_store);
+
+app.get('/recommend/retrieve', handle_recommend_retrieve);
+app.post('/recommend/retrieve', handle_recommend_retrieve);

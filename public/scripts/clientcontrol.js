@@ -105,9 +105,6 @@ ClientControl.prototype.init = function() {
 	}*/
 }
 
-function handler1 (response) {
-	console.log(response);
-}
 /*
 ClientControl.prototype._getRecommend = function(n) {
 	var count = n || 1;
@@ -268,6 +265,7 @@ ClientControl.prototype._getMyPlaylist = function() {
 
 ClientControl.prototype._onInitLoad = function () {
 	sysrecommender.init(this._model);
+	setTimeout(function() { sysrecommender.get_recommendation(); }, 1000);
 }
 
 ClientControl.prototype._onPlaySong = function(id) {

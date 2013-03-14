@@ -53,8 +53,41 @@ sysrecommender.remove_song = function (song_id) {
 	delete this.song_vectors[song_id];
 }
 
+sysrecommender.save_playlist_vector = function () {
+	$.ajax({
+		type	: 'post',
+		url		: 'recommend/store',
+		data	: {
+			fbid: session.userID,
+			array: sysrecommender.playlist_vector.elements,
+		},
+		success	: function (response) {
+			console.log("save : " + response);
+		}
+	});
+}
+
+sysrecommender.retrieve_playlist_vector = function ( userID ) {
+	$.ajax({
+		type	: 'post',
+		url		: 'recommend/retrieve',
+		data	: {
+			fbid: userID,
+		},
+		success	: function (response) {
+			console.log("retrieve : " + response);	
+		}
+	});
+}
+
 sysrecommender.get_recommendation = function () {
+	console.log(this);
 	// TODO: algo to compute recommendation
+	if (this.norm_playlist_vector == undefined) {
+		this.norm_playlist_vector = this.playlist_vector.toUnitVector();
+	}
+	this.save_playlist_vector();
+	this.retrieve_playlist_vector(session.userID);
 }
 
 

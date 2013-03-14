@@ -66,6 +66,24 @@ nest.search_song = function(params, cb, userData) {
 	});
 }
 
+nest.search_artist = function(params, cb, userData) {
+	userData = userData || {};
+	var url = nest._URLmake('artist', 'extract');
+	for (var key in params) {
+		if (params.hasOwnProperty(key)) {
+			url = nest._URLappend( url, key, encodeURIComponent(params[key]) );
+		}
+	}
+	
+	$.ajax({
+		type	: 'get',
+		url		: url,
+		success	: function(response) {
+			cb(response.response.artists[0], userData);
+		},
+	});
+}
+
 nest._URLmake = function(api_type, api_method) {
 	return nest.api_url + api_type + '/' + api_method + '?api_key=' + nest.api_key;
 }
