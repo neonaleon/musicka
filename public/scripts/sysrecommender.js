@@ -93,7 +93,7 @@ sysrecommender.get_friends = function () {
 			fbid: session.userID,
 		},
 		success	: function (response) {
-			console.log("retrieve : ", response);	
+			console.log("retrieve friends: ", response);	
 		}
 	});
 }

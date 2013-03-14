@@ -219,15 +219,14 @@ function handle_recommend_retrieve_friends (req, res) {
 				return;
 			}
 			var response_object = {};
-			for (var i in friendList) {
-				var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id='" + friendList[i].uid + "'");
-				query_friend_vector.on('row', function (row) {
-					response_object[row.id] = row.vector;
-				})
-				query_friend_vector.on('end', function (result) {
-					res.json(response_object);
-				})
-			}
+			
+			var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id IN (" + friendList.toString() + ")");
+			query_friend_vector.on('row', function (row) {
+				response_object[row.id] = row.vector;
+			});
+			query_friend_vector.on('end', function (result) {
+				res.json(response_object);
+			});
 		});
 	});
 }
