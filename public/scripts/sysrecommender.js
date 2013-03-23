@@ -78,7 +78,6 @@ sysrecommender.retrieve_playlist_vector = function ( userID ) {
 		url		: 'recommend/retrieve',
 		data	: {
 			sr: session.userID,
-			token: session.token,
 		},
 		success	: function (response) {
 			console.log("retrieve : ", response);	
@@ -92,6 +91,7 @@ sysrecommender.get_friends = function () {
 		url		: 'recommend/retrieve_friends',
 		data	: {
 			sr: session.signed,
+			token: session.token,
 		},
 		success	: function (response) {
 			console.log("retrieve friends: ", response);	

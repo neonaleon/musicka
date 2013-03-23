@@ -242,12 +242,11 @@ function handle_recommend_retrieve_friends(req, res) {
 		res.send('Bad request');
 		return;
 	}
-	console.log(fb)
 
 	var query = 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
 	var user = fb.user_id;
 	var token = req.body.token;
-
+	
 	graph.setAccessToken(token);
 	graph.fql(query, function(err, fres) {
 		var friendList = fres.data;
@@ -258,13 +257,24 @@ function handle_recommend_retrieve_friends(req, res) {
 			// handle another way...
 			return;
 		}
+		if(friendList.length <= 0) {
+			res.json({
+				list : []
+			});
+			return;
+		}
+		
 		var response_object = {};
 
-		var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id IN (" + friendList.toString() + ")");
+		var queryVector = "SELECT id, vector FROM playlist_vectors WHERE id IN ('" + friendList[0].uid + "'";
+		for(var i = 1; i < friendList.length; i++) {
+			queryVector += ",'" + friendList[i].uid + "'";
+		}
+		queryVector += ")";
+		var query_friend_vector = client.query(queryVector);
+
 		query_friend_vector.on('row', function(row) {
 			response_object[row.id] = row.vector;
-			console.log(row.id);
-			console.log(row.vector);
 		});
 		query_friend_vector.on('end', function(result) {
 			res.json(response_object);
