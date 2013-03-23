@@ -220,7 +220,7 @@ function handle_recommend_retrieve_friends (req, res) {
 			}
 			var response_object = {};
 			
-			var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id IN (" + friendList.toString() + ")");
+			var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id IN (" + friendList.join(',') + ")");
 			query_friend_vector.on('row', function (row) {
 				response_object[row.id] = row.vector;
 			});

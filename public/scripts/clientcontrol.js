@@ -90,19 +90,6 @@ ClientControl.prototype.init = function() {
 	var requestController = new RecTableControl(this);
 	
 	this._isInit = true;
-	
-	//nest.list_genres(handler1.bind(this)); //416
-	//nest.list_mood_terms(handler1.bind(this)); //71
-	//nest.list_style_terms(handler1); //1264
-	//nest.search_song({ combined: "lady gaga poker face", results:1 }, handler1); // combined means search artist + title
-	
-	/*var requests = undefined;
-	if (args.request_ids !== undefined) {
-		requests = args.request_ids.split('%2C'); // %2C is ,
-		console.log('!!!', requests);
-	} else {
-		console.log('!!!', 'not a request');
-	}*/
 }
 
 /*
@@ -265,7 +252,7 @@ ClientControl.prototype._getMyPlaylist = function() {
 
 ClientControl.prototype._onInitLoad = function () {
 	sysrecommender.init(this._model);
-	setTimeout(function() { sysrecommender.get_recommendation(); }, 1000);
+	sysrecommender.recommend();
 }
 
 ClientControl.prototype._onPlaySong = function(id) {

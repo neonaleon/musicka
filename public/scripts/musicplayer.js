@@ -11,6 +11,7 @@ MusicPlayer.prototype.addSong = function(id, title, rate) {
 	this._playListHash[id] = song;
 	song.rating = rate || 0;
 	song.title = title || 0;
+	sysrecommender.add_song(id);
 	/* this was never fired....
 	if(arguments >= 2) {
 		song.rating = rate;
@@ -42,6 +43,8 @@ MusicPlayer.prototype.removeSong = function(id) {
 		this._current = -1;
 		return nextSong;
 	}
+	
+	sysrecommender.remove_song(id);
 	
 	return false;
 }
