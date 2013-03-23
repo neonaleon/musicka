@@ -272,12 +272,14 @@ function handle_recommend_retrieve_friends(req, res) {
 		}
 		queryVector += ")";
 		var query_friend_vector = client.query(queryVector);
-
+		console.log(queryVector)
 		query_friend_vector.on('row', function(row) {
 			response_object[row.id] = row.vector;
 		});
 		query_friend_vector.on('end', function(result) {
+			console.log(response_object)
 			res.json(response_object);
+			
 		});
 	});
 }
