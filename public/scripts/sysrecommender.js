@@ -18,7 +18,7 @@ var sysrecommender = {
 	ready_count: undefined,
 	isReady: function() { return sysrecommender.ready_count == 0 },
 	
-	recommend_interval: 1000, // update recommendations every .. seconds
+	recommend_interval: 5000, // update recommendations every .. seconds
 	recommend_pending: false,
 }
 
@@ -81,9 +81,9 @@ sysrecommender.cosine_similarity = function (a) {
 sysrecommender.process_playlists = function (res_json) {
 	/* computes similarity of playlist vectors of all user's friends, and sorts them in descending order */
 	for (var k in res_json) {
-		friend_similarity.push( [ this.cosine_similarity( res_json[k] ), k ] );
+		this.friend_similarity.push( [ this.cosine_similarity( res_json[k] ), k ] );
 	}
-	friend_similarity.sort( function(a, b){ return a[0] - b[0]; } );
+	this.friend_similarity.sort( function(a, b){ return a[0] - b[0]; } );
 	console.log("process_playlists: ", friend_similarity);
 }
 
@@ -124,7 +124,7 @@ sysrecommender.retrieve_friends = function () {
 		},
 		success	: function (response) {
 			console.log("retrieve friends: ", response);
-			sysrecommender.process_playlists(response);
+			sysrecommender.process_playlists.bind(this, response);
 		}
 	});
 }
