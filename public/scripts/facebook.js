@@ -13,6 +13,8 @@ window.fbAsyncInit = function() {
 			//alert('fb client connected');
 			session.userID	= response.authResponse.userID;
 			session.token	= response.authResponse.accessToken;
+			session.signed	= response.authResponse.signedRequest;
+			
 			if(clientController) {
 				clientController.init();
 			}
@@ -76,4 +78,5 @@ function login() {
 var session = {
 	userID	: null,
 	token	: null,
+	signed	: null,
 }

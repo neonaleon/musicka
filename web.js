@@ -1,14 +1,18 @@
-var express				= require('express');
-var pg					= require('pg');
-var graph				= require('fbgraph');
+var express = require('express');
+var pg = require('pg');
+var graph = require('fbgraph');
+var decoder = require('./signedrequest.js');
 
-var FACEBOOK_APP_ID		= process.env.FACEBOOK_APP_ID || '537482629624950';
-var FACEBOOK_APP_SECRET	= process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
+var FACEBOOK_APP_ID = process.env.FACEBOOK_APP_ID || '537482629624950';
+var FACEBOOK_APP_SECRET = process.env.FACEBOOK_SECRET || '01f9950d67e919d5d79e34e195ea5080';
 
-var APP_DOMAIN			= process.env.APP_DOMAIN || '//localhost:3000/';
-var PG_CONNECT_STR		= process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local';
+var APP_DOMAIN = process.env.APP_DOMAIN || '//localhost:3000/';
+var PG_CONNECT_STR = process.env.DATABASE_URL || 'postgres://postgres:musicka@localhost:5432/musicka-local';
 //'postgres://btqkctxdnitkrq:vZWExA6HeLbxst7MHzLGf9nBVA@ec2-54-243-242-213.compute-1.amazonaws.com/d35bo6oug912uf';
-var PORT				= process.env.PORT || 3000;
+var PORT = process.env.PORT || 3000;
+
+// Initialise signed request decoder
+var verifier = new decoder(FACEBOOK_APP_SECRET);
 
 // Initialise postgres connection
 var client = new pg.Client(PG_CONNECT_STR);
@@ -22,7 +26,7 @@ app.configure(function() {
 	// make a custom html renderer
 	app.engine('.html', require('ejs').renderFile);
 	app.engine('.htm', require('ejs').renderFile);
-	
+
 	app.use(express.logger());
 	app.use(express.static(__dirname + '/public'));
 	app.use(express.bodyParser());
@@ -42,68 +46,84 @@ function handle_request(req, res) {
 
 // Good luck
 /*
-function handle_recommend(req, res) {
-	var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
-	var user	= req.body.fbid;
-	var token	= null;
-	
-	var tokenQuery = client.query("SELECT token FROM user_token WHERE id = '" + user + "'");
-	tokenQuery.on('row', function(row) {
-		token = row.token;
-	});
-	tokenQuery.on('end', function(result) {
-		if(token === null) {
-			res.redirect('/auth/facebook');
-			return;
-		}
-		
-		graph.setAccessToken(token);
-		graph.fql(query, function(err, fres) {
-			var friendList = fres.data;
-			if(typeof friendList === 'undefined') {
-				res.json({list: []});
-				return;
-			}
-			var friends = [];
-			for(var i = 0; i < friendList.length; i++) {
-				friends.push(friendList[i].uid);
-			}
-			for(var i = 0; i < friends.length; i++) {
-				var f = friends[i];
-				var songs = [];
-				var processed = 0;
-				getPlaylist(f, function(result) {
-					for(var j = 0; j < result.length; j++) {
-						songs.push(result[j].v);
-					}
-					processed++;
-					if(processed >= friends.length) {
-						var arr = [];
-						if(songs.length > 0) {
-							arr.push(songs[Math.floor(Math.random() * songs.length)])
-						}
-						var output = {list: arr};
-						res.json(output);
-					}
-				});
-			}
-		});
-	});
-}
-*/
+ function handle_recommend(req, res) {
+ var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
+ var user	= req.body.fbid;
+ var token	= null;
+
+ var tokenQuery = client.query("SELECT token FROM user_token WHERE id = '" + user + "'");
+ tokenQuery.on('row', function(row) {
+ token = row.token;
+ });
+ tokenQuery.on('end', function(result) {
+ if(token === null) {
+ res.redirect('/auth/facebook');
+ return;
+ }
+
+ graph.setAccessToken(token);
+ graph.fql(query, function(err, fres) {
+ var friendList = fres.data;
+ if(typeof friendList === 'undefined') {
+ res.json({list: []});
+ return;
+ }
+ var friends = [];
+ for(var i = 0; i < friendList.length; i++) {
+ friends.push(friendList[i].uid);
+ }
+ for(var i = 0; i < friends.length; i++) {
+ var f = friends[i];
+ var songs = [];
+ var processed = 0;
+ getPlaylist(f, function(result) {
+ for(var j = 0; j < result.length; j++) {
+ songs.push(result[j].v);
+ }
+ processed++;
+ if(processed >= friends.length) {
+ var arr = [];
+ if(songs.length > 0) {
+ arr.push(songs[Math.floor(Math.random() * songs.length)])
+ }
+ var output = {list: arr};
+ res.json(output);
+ }
+ });
+ }
+ });
+ });
+ }
+ */
 
 function handle_add_song_request(req, res) {
-	client.query("INSERT INTO user_playlist(id, song, rating) values('"+req.query.fbid+"', '"+req.query.video+"', 0)");
+	var fb = verifier.decode(req.query.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+	client.query("INSERT INTO user_playlist(id, song, rating) values('" + fb.user_id + "', '" + req.query.video + "', 0)");
 	res.send('OK');
 }
 
 function handle_remove_song_request(req, res) {
-	client.query("DELETE FROM user_playlist WHERE id = '"+req.query.fbid+"' AND song = '"+req.query.video+"'");
+	var fb = verifier.decode(req.query.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+	client.query("DELETE FROM user_playlist WHERE id = '" + fb.user_id + "' AND song = '" + req.query.video + "'");
 	res.send('OK');
 }
 
-function handle_get_list_request(req, res) {	
-	getPlaylist(req.body.fbid, function(result) {
+function handle_get_list_request(req, res) {
+	var fb = verifier.decode(req.body.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+
+	getPlaylist(fb.user_id, function(result) {
 		var output = {};
 		output['list'] = result;
 		res.json(output);
@@ -111,10 +131,13 @@ function handle_get_list_request(req, res) {
 }
 
 function getPlaylist(userID, done) {
-	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '"+userID+"'");
+	var query = client.query("SELECT song, rating FROM user_playlist WHERE id = '" + userID + "'");
 	var playlist = [];
 	query.on('row', function(row) {
-		playlist.push({v: row.song, r: row.rating});
+		playlist.push({
+			v : row.song,
+			r : row.rating
+		});
 	});
 	query.on('end', function(result) {
 		done(playlist);
@@ -122,51 +145,63 @@ function getPlaylist(userID, done) {
 }
 
 function handle_rate_song_request(req, res) {
-	client.query("UPDATE user_playlist SET rating = '"+req.body.rate+"' WHERE id = '"+req.body.fbid+
-		"' AND song = '"+req.body.video+"'");
+	var fb = verifier.decode(req.body.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+	client.query("UPDATE user_playlist SET rating = '" + req.body.rate + "' WHERE id = '" + fb.user_id + "' AND song = '" + req.body.video + "'");
 	res.send('OK');
 }
 
 function handle_define_js(req, res) {
 	res.set('Content-Type', 'text/javascript');
-	res.render('define.ejs',
-		{id: FACEBOOK_APP_ID, domain: APP_DOMAIN});
-}
-
-function handle_user_token(req, res) {
-	var userID	= req.body.fbid;
-	var token	= req.body.token;
-	
-	// Extend token
-    graph.get(	"oauth/access_token?grant_type=fb_exchange_token&client_id="
-    			+ FACEBOOK_APP_ID + "&client_secret=" + FACEBOOK_APP_SECRET + 
-    			"&fb_exchange_token=" + token,
-		function(err, fres) {
-			var done = function() {
-				res.send('OK');
-			}
-			addToken(userID, fres.access_token, done);
-    	});
-}
-
-function addToken(fbid, token, done) {
-	var query = client.query("SELECT token FROM user_token WHERE id = '" + fbid + "'");
-	query.on('end', function(result) {
-		var query2;
-		if(result.rowCount >= 1) {
-			query2 = client.query("UPDATE user_token SET token = '"+token+"' WHERE id = '"+fbid+"'");
-		} else {
-			query2 = client.query("INSERT INTO user_token(id, token) values('"+fbid+"', '"+token+"')");
-		}
-		query2.on('end', function(result) {
-			done();
-		});
+	res.render('define.ejs', {
+		id : FACEBOOK_APP_ID,
+		domain : APP_DOMAIN
 	});
 }
 
+/*function handle_user_token(req, res) {
+ var userID	= req.body.fbid;
+ var token	= req.body.token;
+
+ // Extend token
+ graph.get(	"oauth/access_token?grant_type=fb_exchange_token&client_id="
+ + FACEBOOK_APP_ID + "&client_secret=" + FACEBOOK_APP_SECRET +
+ "&fb_exchange_token=" + token,
+ function(err, fres) {
+ var done = function() {
+ res.send('OK');
+ }
+ addToken(userID, fres.access_token, done);
+ });
+ }*/
+
+/*function addToken(fbid, token, done) {
+ var query = client.query("SELECT token FROM user_token WHERE id = '" + fbid + "'");
+ query.on('end', function(result) {
+ var query2;
+ if(result.rowCount >= 1) {
+ query2 = client.query("UPDATE user_token SET token = '"+token+"' WHERE id = '"+fbid+"'");
+ } else {
+ query2 = client.query("INSERT INTO user_token(id, token) values('"+fbid+"', '"+token+"')");
+ }
+ query2.on('end', function(result) {
+ done();
+ });
+ });
+ }*/
+
 /* Recommendations */
-function handle_recommend_store (req, res) {
-	var userID	= req.body.fbid;
+function handle_recommend_store(req, res) {
+	var fb = verifier.decode(req.body.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+
+	var userID = fb.user_id;
 	var array = req.body.array;
 	for (var i in array) {
 		array[i] = parseInt(array[i]);
@@ -174,20 +209,24 @@ function handle_recommend_store (req, res) {
 	var query = client.query("SELECT vector FROM playlist_vectors WHERE id = '" + userID + "'");
 	query.on('end', function(result) {
 		var query2;
-		if(result.rowCount >= 1) {
-			query2 = client.query("UPDATE playlist_vectors SET vector = ARRAY["+ array + "] WHERE id = '"+ userID +"'");
+		if (result.rowCount >= 1) {
+			query2 = client.query("UPDATE playlist_vectors SET vector = ARRAY[" + array + "] WHERE id = '" + userID + "'");
 		} else {
 			query2 = client.query("INSERT INTO playlist_vectors(id, vector) values('" + userID + "', ARRAY[" + array + "])");
 		}
-		query2.on('end', function(result) {
-			res.send('OK');
-		});
+		res.send('OK');
 	});
 }
 
-function handle_recommend_retrieve (req, res) {
-	var userID	= req.body.fbid;
-	var query = client.query("SELECT vector FROM playlist_vectors WHERE id = '"+userID+"'");
+function handle_recommend_retrieve(req, res) {
+	var fb = verifier.decode(req.body.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+
+	var userID = fb.user_id;
+	var query = client.query("SELECT vector FROM playlist_vectors WHERE id = '" + userID + "'");
 	var array = undefined;
 	query.on('row', function(row) {
 		array = row.vector;
@@ -197,42 +236,51 @@ function handle_recommend_retrieve (req, res) {
 	});
 }
 
-function handle_recommend_retrieve_friends (req, res) {
-	var query	= 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
-	var user	= req.body.fbid;
-	var token	= null;
+function handle_recommend_retrieve_friends(req, res) {
+	var fb = verifier.decode(req.body.sr);
+	if (fb === null) {
+		res.send('Bad request');
+		return;
+	}
+
+	var query = 'SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1=me()) AND is_app_user=1'
+	var user = fb.user_id;
+	var token = req.body.token;
 	
-	var tokenQuery = client.query("SELECT token FROM user_token WHERE id = '" + user + "'");
-	tokenQuery.on('row', function(row) {
-		token = row.token;
-	});
-	tokenQuery.on('end', function(result) {
-		if(token === null) {
-			res.redirect('/auth/facebook');
+	graph.setAccessToken(token);
+	graph.fql(query, function(err, fres) {
+		var friendList = fres.data;
+		if ( typeof friendList === 'undefined') {
+			res.json({
+				list : []
+			});
+			// handle another way...
 			return;
 		}
-		graph.setAccessToken(token);
-		graph.fql(query, function(err, fres) {
-			var friendList = fres.data;
-			if(typeof friendList === 'undefined') {
-				res.json( { list: [] } ); // handle another way...
-				return;
-			}
-			var response_object = {};
+		if(friendList.length <= 0) {
+			res.json({
+				list : []
+			});
+			return;
+		}
+		
+		var response_object = {};
+
+		var queryVector = "SELECT id, vector FROM playlist_vectors WHERE id IN ('" + friendList[0].uid + "'";
+		for(var i = 1; i < friendList.length; i++) {
+			queryVector += ",'" + friendList[i].uid + "'";
+		}
+		queryVector += ")";
+		var query_friend_vector = client.query(queryVector);
+		query_friend_vector.on('row', function(row) {
+			response_object[row.id] = row.vector;
+		});
+		query_friend_vector.on('end', function(result) {
+			res.json(response_object);
 			
-			var query_friend_vector = client.query("SELECT id, vector FROM playlist_vectors WHERE id IN (" + friendList.join(',') + ")");
-			query_friend_vector.on('row', function (row) {
-				response_object[row.id] = row.vector;
-			});
-			query_friend_vector.on('end', function (result) {
-				res.json(response_object);
-			});
 		});
 	});
 }
-
-app.get('/auth/facebook', handle_user_token);
-app.post('/auth/facebook', handle_user_token);
 
 app.get('/', handle_request);
 app.post('/', handle_request);
@@ -259,4 +307,4 @@ app.get('/recommend/retrieve', handle_recommend_retrieve);
 app.post('/recommend/retrieve', handle_recommend_retrieve);
 
 app.get('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
-app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
+app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends); 

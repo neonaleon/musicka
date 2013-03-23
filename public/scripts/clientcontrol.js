@@ -28,7 +28,7 @@ ClientControl.prototype.init = function() {
 	
 	var self = this;
 	// Inform server of new token
-	$.ajax({
+	/*$.ajax({
 		type		: 'post',
 		url			: "/auth/facebook",
 		data		: {fbid: session.userID, token: session.token},
@@ -40,9 +40,9 @@ ClientControl.prototype.init = function() {
 					function( response ) {
 						console.log(response);
 					});
-			};*/
+			};
 		}
-	});
+	});*/
 	
 	//console.log('!!!', document.URL);
 	var query = document.location.search.substring(1).split('&');
@@ -184,7 +184,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 			$.ajax({
 				dataType : 'POST',
 				url : "add",
-				data : {video: videoID, fbid: session.userID}
+				data : {video: videoID, sr: session.signed}
 			});
 		}
 	});
@@ -208,7 +208,7 @@ ClientControl.prototype._onRateSong = function(videoID, rate) {
 	$.ajax({
 		type : 'post',
 		url : "rate",
-		data : {video: videoID, fbid: session.userID, rate: rate},
+		data : {video: videoID, sr: session.signed, rate: rate},
 		success: function () {
 			self._model.rateSong(videoID, rate);
 		},
@@ -231,7 +231,7 @@ ClientControl.prototype._getMyPlaylist = function() {
 	$.ajax({
 		type		: 'post',
 		url			: "getlist",
-		data		: {fbid: session.userID},
+		data		: {sr: session.signed},
 		success		: function(response) {
 			control.toLoad = response.list.length;
 			for(var i = 0; i < response.list.length; i++) {
@@ -286,7 +286,7 @@ ClientControl.prototype._onRemoveSong = function(id) {
 	$.ajax({
 		dataType : 'POST',
 		url : "remove",
-		data : {video: videoID, fbid: session.userID}
+		data : {video: videoID, sr: session.signed}
 	});
 }
 
