@@ -77,7 +77,7 @@ sysrecommender.process_playlists = function (res_json) {
 		this.friend_similarity.push( [ this.cosine_similarity( res_json[k] ), k ] );
 	}
 	this.friend_similarity.sort( function(a, b){ return a[0] - b[0]; } );
-	console.log("processed playlists: ", friend_similarity);
+	console.log("processed playlists: ", this.friend_similarity);
 }
 
 sysrecommender.save_playlist_vector = function () {
