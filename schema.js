@@ -10,7 +10,7 @@ query = client.query("CREATE TABLE user_token (id bigint PRIMARY KEY, token varc
 query = client.query("SELECT token FROM user_token WHERE id = ''");
 query = client.query("INSERT INTO user_token(id, token) values('', '')");
 query = client.query("UPDATE user_token SET token = '' WHERE id = ''");
-query = client.query("CREATE TABLE playlist_vectors (id bigint PRIMARY KEY, array integer ARRAY[30])");
+query = client.query("CREATE TABLE playlist_vectors (id bigint PRIMARY KEY, vector integer ARRAY[30])");
 //client.query("INSERT INTO user_playlist(id, song) values('', '')");
 //query = client.query("SELECT song, rating FROM user_playlist WHERE id = ''");
 //query = client.query("DELETE FROM user_playlist WHERE id = '' AND song = ''");
