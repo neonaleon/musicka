@@ -14,7 +14,6 @@ var sysrecommender = {
 	
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlist_vectors: undefined, // userID: playlist vector
-	friend_ready: false;
 	
 	ready_count: undefined,
 	isReady: function() { return sysrecommender.ready_count == 0 },
