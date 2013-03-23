@@ -39,6 +39,7 @@ sysrecommender.build_playlist_vector = function () {
 
 sysrecommender.add_song = function (song_id) {
 	/* called when songs added to playlist, performs the same async echonest search, async */
+	if (this.model == undefined) return; // workaround initial addSong in musicplayer.js
 	var song_obj = this.model._song(song_id);
 	nest.search_song({ combined: song_obj.title, results: 1 }, sysrecommender.on_add_song.bind(sysrecommender), { song: song_obj });
 	sysrecommender.ready_count += 1;
@@ -135,7 +136,7 @@ sysrecommender.update_recommendation = function () {
 	//	this.norm_playlist_vector = this.playlist_vector.toUnitVector();
 	//}
 	// testing
-	this.save_playlist_vector();
+	//this.save_playlist_vector();
 	//this.retrieve_playlist_vector(session.userID);
 	this.retrieve_friends();
 }
