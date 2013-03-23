@@ -15,11 +15,7 @@ var sysrecommender = {
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlist_vectors: undefined, // userID: playlist vector
 	
-	ready_count: undefined,
-	isReady: function() { return sysrecommender.ready_count == 0 },
-	
 	recommend_interval: 5000, // update recommendations every .. seconds
-	recommend_pending: false,
 }
 
 sysrecommender.init = function (model) {
@@ -34,7 +30,6 @@ sysrecommender.build_playlist_vector = function () {
 		var song_obj = this.model.playList[i];
 		nest.search_song({ combined: song_obj.title, results: 1 }, sysrecommender.on_add_song.bind(sysrecommender), { song: song_obj });
 	}
-	sysrecommender.ready_count = this.model.playList.length;
 }
 
 sysrecommender.add_song = function (song_id) {
@@ -42,7 +37,6 @@ sysrecommender.add_song = function (song_id) {
 	if (this.model == undefined) return; // workaround initial addSong in musicplayer.js
 	var song_obj = this.model._song(song_id);
 	nest.search_song({ combined: song_obj.title, results: 1 }, sysrecommender.on_add_song.bind(sysrecommender), { song: song_obj });
-	sysrecommender.ready_count += 1;
 }
 
 sysrecommender.on_add_song = function (response, userData) {
@@ -50,7 +44,6 @@ sysrecommender.on_add_song = function (response, userData) {
 	var song_vector = this.extract_song_data(response);
 	this.song_vectors[userData.song.id] = song_vector;
 	this.playlist_vector = this.playlist_vector.add(song_vector);
-	sysrecommender.ready_count -= 1;
 	this.save_playlist_vector();
 }
 
@@ -84,7 +77,7 @@ sysrecommender.process_playlists = function (res_json) {
 		this.friend_similarity.push( [ this.cosine_similarity( res_json[k] ), k ] );
 	}
 	this.friend_similarity.sort( function(a, b){ return a[0] - b[0]; } );
-	console.log("process_playlists: ", friend_similarity);
+	console.log("processed playlists: ", friend_similarity);
 }
 
 sysrecommender.save_playlist_vector = function () {
@@ -124,20 +117,14 @@ sysrecommender.retrieve_friends = function () {
 		},
 		success	: function (response) {
 			console.log("retrieve friends: ", response);
-			sysrecommender.process_playlists.bind(this, response);
+			sysrecommender.process_playlists.bind(sysrecommender)(response);
+			sysrecommender.do_recommendation.bind(sysrecommender)();
 		}
 	});
 }
 
 sysrecommender.update_recommendation = function () {
-	console.log(this);
-	// TODO: algo to compute recommendation
-	//if (this.norm_playlist_vector == undefined) {
-	//	this.norm_playlist_vector = this.playlist_vector.toUnitVector();
-	//}
-	// testing
-	//this.save_playlist_vector();
-	//this.retrieve_playlist_vector(session.userID);
+	this.norm_playlist_vector = this.playlist_vector.toUnitVector();
 	this.retrieve_friends();
 }
 
