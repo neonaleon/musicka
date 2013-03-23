@@ -63,7 +63,7 @@ sysrecommender.save_playlist_vector = function () {
 		type	: 'post',
 		url		: 'recommend/store',
 		data	: {
-			fbid: session.userID,
+			sr: session.signed,
 			array: sysrecommender.playlist_vector.elements,
 		},
 		success	: function (response) {
@@ -77,7 +77,8 @@ sysrecommender.retrieve_playlist_vector = function ( userID ) {
 		type	: 'post',
 		url		: 'recommend/retrieve',
 		data	: {
-			fbid: userID,
+			sr: session.userID,
+			token: session.token,
 		},
 		success	: function (response) {
 			console.log("retrieve : ", response);	
@@ -90,7 +91,7 @@ sysrecommender.get_friends = function () {
 		type	: 'post',
 		url		: 'recommend/retrieve_friends',
 		data	: {
-			fbid: session.userID,
+			sr: session.signed,
 		},
 		success	: function (response) {
 			console.log("retrieve friends: ", response);	
@@ -105,7 +106,7 @@ sysrecommender.get_recommendation = function () {
 		this.norm_playlist_vector = this.playlist_vector.toUnitVector();
 	}
 	// testing
-	//this.save_playlist_vector();
+	this.save_playlist_vector();
 	//this.retrieve_playlist_vector(session.userID);
 	this.get_friends();
 }
