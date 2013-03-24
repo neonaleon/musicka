@@ -289,7 +289,7 @@ function handle_recommend_getlist_friend(req, res) {
 		playlist.push( row.song );
 	});
 	query.on('end', function(result) {
-		res.json(playlist);
+		res.json({ playlist: playlist });
 	});
 }
 
