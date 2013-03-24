@@ -13,9 +13,14 @@ var sysrecommender = {
 	num_equivalence_classes: 10,
 	
 	friend_similarity: [], // [(cosine similarity, userID)]
-	friend_playlist_vectors: undefined, // userID: playlist vector
+	friend_playlists: {}, // { userID : [ songIDs ] }
 	
 	recommend_interval: 5000, // update recommendations every .. seconds
+
+	topN_friends: 5,
+	topN_songs: 2,
+	
+	recommendations: [],
 }
 
 sysrecommender.init = function (model) {
@@ -73,12 +78,44 @@ sysrecommender.cosine_similarity = function (a) {
 
 sysrecommender.process_playlists = function (res_json) {
 	/* computes similarity of playlist vectors of all user's friends, and sorts them in descending order */
+	this.friend_similarity = [];
 	for (var k in res_json) {
 		this.friend_similarity.push( [ this.cosine_similarity( res_json[k] ), k ] );
 	}
 	this.friend_similarity.sort( function(a, b){ return a[0] - b[0]; } );
 	console.log("processed playlists: ", this.friend_similarity);
 }
+
+sysrecommender.do_recommendation = function () {
+	for (var i in this.friend_similarity) {
+		if (i >= this.topN_friends) break;
+		var friend_id = this.friend_similarity[i][1];
+		this.get_friend_playlist( friend_id );
+		
+		for (var j = 0; j < this.topN_songs; j++) {
+			this.recommendations[ i * this.topN_songs + j ] = Math.floor(Math.random() * this.friend_playlists[friend_id].length);	
+		}
+	}
+	this.show_recommendation();
+}
+
+sysrecommender.update_recommendation = function () {
+	this.norm_playlist_vector = this.playlist_vector.toUnitVector();
+	this.retrieve_friends();
+}
+
+sysrecommend.show_recommendation = function () {
+	// jquery the document
+	// draw the ui
+	console.log(this.recommendations);
+}
+
+sysrecommender.recommend = function () {
+	/* periodic recommend loop */
+	this.update_recommendation();
+	setTimeout(function() { sysrecommender.recommend(); }, sysrecommender.recommend_interval);
+}
+
 
 sysrecommender.save_playlist_vector = function () {
 	$.ajax({
@@ -94,6 +131,7 @@ sysrecommender.save_playlist_vector = function () {
 	});
 }
 
+/*
 sysrecommender.retrieve_playlist_vector = function ( userID ) {
 	$.ajax({
 		type	: 'post',
@@ -106,7 +144,7 @@ sysrecommender.retrieve_playlist_vector = function ( userID ) {
 		}
 	});
 }
-
+*/
 sysrecommender.retrieve_friends = function () {
 	$.ajax({
 		type	: 'post',
@@ -123,12 +161,17 @@ sysrecommender.retrieve_friends = function () {
 	});
 }
 
-sysrecommender.update_recommendation = function () {
-	this.norm_playlist_vector = this.playlist_vector.toUnitVector();
-	this.retrieve_friends();
+sysrecommender.get_friend_playlist = function (id) {
+	$.ajax({
+		type	: 'post',
+		url		: 'recommend/get_friend_playlist',
+		data	: {
+			// wud
+		},
+		success : function (response) {
+			sysrecommender.friend_playlists[id] = response.playlist;
+		},
+		async	: false,
+	});
 }
 
-sysrecommender.recommend = function () {
-	this.update_recommendation();
-	setTimeout(function() { sysrecommender.recommend(); }, sysrecommender.recommend_interval);
-}

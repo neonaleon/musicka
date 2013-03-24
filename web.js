@@ -282,6 +282,11 @@ function handle_recommend_retrieve_friends(req, res) {
 	});
 }
 
+function handle_recommend_getlist_friend(req, res) {
+	// get list of songs of some id (of friend), used by sysrecommender.get_friend_playlist
+	// see sysrecommender for format, see friend_playlists
+}
+
 app.get('/', handle_request);
 app.post('/', handle_request);
 
@@ -307,4 +312,6 @@ app.get('/recommend/retrieve', handle_recommend_retrieve);
 app.post('/recommend/retrieve', handle_recommend_retrieve);
 
 app.get('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
-app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends); 
+app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
+
+app.post('/recommend/get_friend_playlist', handle_recommend_getlist_friend);
