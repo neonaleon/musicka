@@ -104,7 +104,7 @@ sysrecommender.update_recommendation = function () {
 	this.retrieve_friends();
 }
 
-sysrecommend.show_recommendation = function () {
+sysrecommender.show_recommendation = function () {
 	// jquery the document
 	// draw the ui
 	console.log(this.recommendations);
