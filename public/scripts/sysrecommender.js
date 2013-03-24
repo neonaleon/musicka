@@ -18,8 +18,8 @@ var sysrecommender = {
 	recommend_interval: 5000, // update recommendations every 30 seconds
 
 	topN_friends: 5,
-	topN_songs: 2,
-	
+	topN_songs: 1, // randomly show 1 song in topN users' playlist
+		
 	recommendations: [],
 }
 
@@ -93,7 +93,7 @@ sysrecommender.do_recommendation = function () {
 		this.get_friend_playlist( friend_id );
 		
 		for (var j = 0; j < this.topN_songs; j++) {
-			this.recommendations[ i * this.topN_songs + j ] = Math.floor(Math.random() * this.friend_playlists[friend_id].length);	
+			this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];	
 		}
 	}
 	this.show_recommendation();
