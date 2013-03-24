@@ -15,7 +15,7 @@ var sysrecommender = {
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlists: {}, // { userID : [ songIDs ] }
 	
-	recommend_interval: 5000, // update recommendations every .. seconds
+	recommend_interval: 5000, // update recommendations every 30 seconds
 
 	topN_friends: 5,
 	topN_songs: 2,
@@ -166,7 +166,7 @@ sysrecommender.get_friend_playlist = function (id) {
 		type	: 'post',
 		url		: 'recommend/get_friend_playlist',
 		data	: {
-			// wud
+			id: id,
 		},
 		success : function (response) {
 			sysrecommender.friend_playlists[id] = response.playlist;

@@ -283,8 +283,14 @@ function handle_recommend_retrieve_friends(req, res) {
 }
 
 function handle_recommend_getlist_friend(req, res) {
-	// get list of songs of some id (of friend), used by sysrecommender.get_friend_playlist
-	// see sysrecommender for format, see friend_playlists
+	var query = client.query("SELECT song FROM user_playlist WHERE id = '" + req.body.id + "'");
+	var playlist = [];
+	query.on('row', function(row) {
+		playlist.push( row.song );
+	});
+	query.on('end', function(result) {
+		res.json(playlist);
+	});
 }
 
 app.get('/', handle_request);
