@@ -22,6 +22,8 @@ var sysrecommender = {
 	
 	toRetrieve: 0,
 	retrieved: 0,
+	
+	focused: true,
 		
 	recommendations: [],
 }
@@ -95,14 +97,18 @@ sysrecommender.start_recommendation = function () {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
 		this.get_friend_playlist( friend_id );
-		this.toRetrieve = i;	
+		this.toRetrieve = i;
 	}
 }
 
 sysrecommender.do_recommendation = function () {
 	/* algorithm work for recommendation here */
-	for (var j = 0; j < this.topN_songs; j++) {
-		this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
+	for (var i in this.friend_similarity) {
+		if (i >= this.topN_friends) break;
+		var friend_id = this.friend_similarity[i][1];
+		for (var j = 0; j < this.topN_songs; j++) {
+			this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
+		}
 	}
 	this.end_recommendation();
 }
@@ -111,7 +117,10 @@ sysrecommender.end_recommendation = function () {
 	/* end the recommendation by showing the UI */
 	// jquery the document
 	// draw the ui
-	console.log("end recommendations: ", this.recommendations);
+	for (var i in this.recommendations) {
+		this.make_recommendation_item('RRecList', this.recommendations[i]);
+	}
+	// console.log("end recommendations: ", this.recommendations);
 }
 
 sysrecommender.update_recommendation = function () {
@@ -125,7 +134,50 @@ sysrecommender.recommend = function () {
 	setTimeout(function() { sysrecommender.recommend(); }, sysrecommender.recommend_interval);
 }
 
+/* UI */
+sysrecommender.make_recommendation_item = function(div, videoID) {
+	var column = $('#'+div);
+	var item = $('<a>');
+	column.append(item);
+	
+	var remove = $('<a>');
+	remove.attr('href', '#');
+	remove.attr('rel', 'tooltip');
+	remove.attr('data-original-title', 'Remove');
+	remove.tooltip({ placement:'right' });
+	remove.append($('<i class=\"icon-remove-sign\">'));
+	remove.click(function() { item.remove(); });
 
+	var rowControls = $('<div>').append(remove);
+	rowControls.addClass('pull-right');
+	item.append(rowControls);
+	
+	this.get_yt_info(item, videoID);
+}
+
+sysrecommender.get_yt_info = function(item, videoID) {
+	var videoImg = new Image();
+	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
+	var thumbnail = $('<div>').append();
+	thumbnail.addClass('pull-left');
+	item.append(thumbnail);
+	
+	$.ajax({
+		dataType: 'jsonp',
+		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,
+		success: function(response) {
+			if(typeof response.feed.entry === 'undefined') {
+				return;
+			}
+			var title = $('<a>').html(response.feed.entry[0].title.$t);
+			title.attr('onClick', 'return false;');
+			title.attr('href', '#');
+			item.append(title);
+		}
+	});
+}
+
+/* AJAX */
 sysrecommender.save_playlist_vector = function () {
 	$.ajax({
 		type	: 'post',
@@ -140,20 +192,6 @@ sysrecommender.save_playlist_vector = function () {
 	});
 }
 
-/*
-sysrecommender.retrieve_playlist_vector = function ( userID ) {
-	$.ajax({
-		type	: 'post',
-		url		: 'recommend/retrieve',
-		data	: {
-			sr: session.userID,
-		},
-		success	: function (response) {
-			console.log("retrieve : ", response);	
-		}
-	});
-}
-*/
 sysrecommender.retrieve_friends = function () {
 	$.ajax({
 		type	: 'post',

@@ -33,17 +33,17 @@
 		<div id="fb-root"></div>
 		<script src="scripts/facebook.js"></script>
 		<div class="container-fluid">
-			<!-- Header
+			<!-- Header -->
 			<div class="row-fluid">
 				<div class="page-header">
 					<h1 class="offset4">Musicka<small> Social Music Recommender</small></h1>
 				</div>
-			</div> -->
+			</div>
 			<div class="row-fluid">
 				
 				<div class="span4" id="leftContentArea">
 					
-					<div class="row-fluid"><p class="nav-header">Your playlist</p></div>
+					<div class="row-fluid"><p class="nav-header">your playlist</p></div>
 					<div class="row-fluid">
 						<div style="height:380px; overflow:auto">
 							<ul class="nav nav-list" id="playList">
@@ -51,7 +51,7 @@
 						</div>
 					</div>
 					
-					<div class="row-fluid"><p class="nav-header">Recommended for you</p></div>
+					<div class="row-fluid"><p class="nav-header">your friends recommend</p></div>
 					<div class="row-fluid">
 						<div style="height:380px; overflow:auto">
 							<ul class="nav nav-list" id="requestList">
@@ -85,8 +85,8 @@
 								</div>
 							</div>
 							
-							</br>
-							
+							<!-- </br> -->
+							<!-- Rater 
 							<div class="row-fluid">
 								<div class="span2 offset8">
 									<input type="radio" class="rateStar" value="1"/>
@@ -96,12 +96,30 @@
 									<input type="radio" class="rateStar" value="5"/>
 								</div>
 							</div>
-							
+							-->
 						</div>
 					</div>
 					
 					<div class="row-fluid" id="footer">
-						<p>FOOTER AREA FOR OTHER THINGS</p>
+						<div class="row-fluid">
+							<p class="nav-header">musicka recommends</p>
+						</div>
+						<div class="row-fluid">
+							<div class="span6">
+								<div class="row-fluid"><p class="nav-header">similar</p></div>
+								<div style="height:380px; overflow:auto">
+									<ul class="nav nav-list" id="LRecList">
+									</ul>
+								</div>
+							</div>
+							<div class="span6">
+								<div class="row-fluid"><p class="nav-header">random</p></div>
+								<div style="height:380px; overflow:auto">
+									<ul class="nav nav-list" id="RReqList">
+									</ul>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 				
