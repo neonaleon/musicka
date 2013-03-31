@@ -178,7 +178,7 @@ sysrecommender.get_friend_playlist = function (id) {
 		success : function (response) {
 			sysrecommender.retrieved += 1;
 			sysrecommender.friend_playlists[id] = response.playlist;
-			if (sysrecommender.retrieved == systemrecommender.topN_friends)
+			if (sysrecommender.retrieved == sysrecommender.topN_friends)
 				sysrecommender.do_recommentation();
 		},
 	});
