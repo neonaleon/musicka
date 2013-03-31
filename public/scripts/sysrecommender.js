@@ -19,6 +19,8 @@ var sysrecommender = {
 
 	topN_friends: 5,
 	topN_songs: 1, // randomly show 1 song in topN users' playlist
+	
+	retrieved: 0,
 		
 	recommendations: [],
 }
@@ -86,28 +88,33 @@ sysrecommender.process_playlists = function (res_json) {
 	console.log("processed playlists: ", this.friend_similarity);
 }
 
-sysrecommender.do_recommendation = function () {
+sysrecommender.start_recommendation = function () {
+	this.retrieved = 0;
 	for (var i in this.friend_similarity) {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
-		this.get_friend_playlist( friend_id );
-		
-		for (var j = 0; j < this.topN_songs; j++) {
-			this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];	
-		}
+		this.get_friend_playlist( friend_id );	
 	}
-	this.show_recommendation();
+}
+
+sysrecommender.do_recommendation = function () {
+	/* algorithm work for recommendation here */
+	for (var j = 0; j < this.topN_songs; j++) {
+		this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
+	}
+	this.end_recommendation();
+}
+
+sysrecommender.end_recommendation = function () {
+	/* end the recommendation by showing the UI */
+	// jquery the document
+	// draw the ui
+	console.log("end recommendations: ", this.recommendations);
 }
 
 sysrecommender.update_recommendation = function () {
 	this.norm_playlist_vector = this.playlist_vector.toUnitVector();
 	this.retrieve_friends();
-}
-
-sysrecommender.show_recommendation = function () {
-	// jquery the document
-	// draw the ui
-	console.log(this.recommendations);
 }
 
 sysrecommender.recommend = function () {
@@ -156,7 +163,7 @@ sysrecommender.retrieve_friends = function () {
 		success	: function (response) {
 			console.log("retrieve friends: ", response);
 			sysrecommender.process_playlists.bind(sysrecommender)(response);
-			sysrecommender.do_recommendation.bind(sysrecommender)();
+			sysrecommender.start_recommendation.bind(sysrecommender)();
 		}
 	});
 }
@@ -169,9 +176,11 @@ sysrecommender.get_friend_playlist = function (id) {
 			id: id,
 		},
 		success : function (response) {
+			sysrecommender.retrieved += 1;
 			sysrecommender.friend_playlists[id] = response.playlist;
+			if (sysrecommender.retrieved == systemrecommender.topN_friends)
+				sysrecommender.
 		},
-		async	: false,
 	});
 }
 
