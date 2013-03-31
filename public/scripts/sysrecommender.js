@@ -24,7 +24,8 @@ var sysrecommender = {
 	retrieved: 0,
 	
 	focused: true,
-		
+	
+	similar_recommendations: [],
 	recommendations: [],
 }
 
@@ -120,8 +121,15 @@ sysrecommender.end_recommendation = function () {
 	/* end the recommendation by showing the UI */
 	// jquery the document
 	// draw the ui
-	for (var i in this.recommendations) {
-		this.make_recommendation_item('RRecList', this.recommendations[i]);
+	var lreclist = $('#LRecList');
+	var rreclist = $('#RRecList');
+	lreclist.children().remove();
+	rreclist.children().remove();
+	for (var i in this.similar_recommendations) {
+		
+	}
+	for (var j in this.recommendations) {
+		this.make_recommendation_item('RRecList', this.recommendations[j]);
 	}
 	console.log("end recommendations: ", this.recommendations);
 }
@@ -133,15 +141,14 @@ sysrecommender.update_recommendation = function () {
 
 sysrecommender.recommend = function () {
 	/* periodic recommend loop */
-	this.update_recommendation();
-	setTimeout(function() { if (sysrecommender.focused) sysrecommender.recommend(); }, sysrecommender.recommend_interval);
+	if (sysrecommender.focused) this.update_recommendation();
+	setTimeout(function() { sysrecommender.recommend(); }, sysrecommender.recommend_interval);
 }
 
 /* UI */
 sysrecommender.make_recommendation_item = function(div, videoID) {
 	var column = $('#'+div);
 	
-	console.log(column);
 	var item = $('<a>');
 	column.append(item);
 	
