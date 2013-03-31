@@ -150,6 +150,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	var column = $('#'+div);
 	
 	var item = $('<a>');
+	item.addClass('clearfix');
 	column.append(item);
 	
 	var remove = $('<a>');
