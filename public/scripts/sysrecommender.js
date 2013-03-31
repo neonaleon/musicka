@@ -31,6 +31,9 @@ var sysrecommender = {
 sysrecommender.init = function (model) {
 	this.model = model;
 	this.build_playlist_vector();
+	
+	window.onfocus = function() { sysrecommender.focused = true; };
+	window.onblur = function() { sysrecommender.focused = false; };
 }
 
 sysrecommender.build_playlist_vector = function () {
@@ -87,17 +90,17 @@ sysrecommender.process_playlists = function (res_json) {
 	for (var k in res_json) {
 		this.friend_similarity.push( [ this.cosine_similarity( res_json[k] ), k ] );
 	}
-	this.friend_similarity.sort( function(a, b){ return a[0] - b[0]; } );
+	this.friend_similarity.sort( function(a, b){ return b[0] - a[0]; } );
 	console.log("processed playlists: ", this.friend_similarity);
 }
 
 sysrecommender.start_recommendation = function () {
 	this.retrieved = 0;
+	this.toRetrieve = this.friend_similarity.length;
 	for (var i in this.friend_similarity) {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
 		this.get_friend_playlist( friend_id );
-		this.toRetrieve = i;
 	}
 }
 
@@ -120,7 +123,7 @@ sysrecommender.end_recommendation = function () {
 	for (var i in this.recommendations) {
 		this.make_recommendation_item('RRecList', this.recommendations[i]);
 	}
-	// console.log("end recommendations: ", this.recommendations);
+	console.log("end recommendations: ", this.recommendations);
 }
 
 sysrecommender.update_recommendation = function () {
@@ -131,7 +134,7 @@ sysrecommender.update_recommendation = function () {
 sysrecommender.recommend = function () {
 	/* periodic recommend loop */
 	this.update_recommendation();
-	setTimeout(function() { sysrecommender.recommend(); }, sysrecommender.recommend_interval);
+	setTimeout(function() { if (sysrecommender.focused) sysrecommender.recommend(); }, sysrecommender.recommend_interval);
 }
 
 /* UI */
