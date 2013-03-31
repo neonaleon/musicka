@@ -32,8 +32,8 @@ sysrecommender.init = function (model) {
 	this.model = model;
 	this.build_playlist_vector();
 	
-	$(window).bind('focus', function() { console.log('focused'); sysrecommender.focused = true; }); 
-	$(window).bind('blur', function() { console.log('blurred'); sysrecommender.focused = false; });
+	$(window).bind('focus', function() { console.log('focused', sysrecommender.focused); sysrecommender.focused = true; }); 
+	$(window).bind('blur', function() { console.log('focused', sysrecommender.focused); sysrecommender.focused = false; });
 }
 
 sysrecommender.build_playlist_vector = function () {
