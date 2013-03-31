@@ -20,6 +20,7 @@ var sysrecommender = {
 	topN_friends: 5,
 	topN_songs: 1, // randomly show 1 song in topN users' playlist
 	
+	toRetrieve: 0,
 	retrieved: 0,
 		
 	recommendations: [],
@@ -93,7 +94,8 @@ sysrecommender.start_recommendation = function () {
 	for (var i in this.friend_similarity) {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
-		this.get_friend_playlist( friend_id );	
+		this.get_friend_playlist( friend_id );
+		this.toRetrieve = i;	
 	}
 }
 
@@ -178,7 +180,7 @@ sysrecommender.get_friend_playlist = function (id) {
 		success : function (response) {
 			sysrecommender.retrieved += 1;
 			sysrecommender.friend_playlists[id] = response.playlist;
-			if (sysrecommender.retrieved == sysrecommender.topN_friends)
+			if (sysrecommender.retrieved == sysrecommender.toRetrieve)
 				sysrecommender.do_recommentation();
 		},
 	});
