@@ -32,8 +32,8 @@ sysrecommender.init = function (model) {
 	this.model = model;
 	this.build_playlist_vector();
 	
-	window.onfocus = function() { sysrecommender.focused = true; };
-	window.onblur = function() { sysrecommender.focused = false; };
+	$(window).bind('focus', function() { console.log('focused'); sysrecommender.focused = true; }); 
+	$(window).bind('blur', function() { console.log('blurred'); sysrecommender.focused = false; };
 }
 
 sysrecommender.build_playlist_vector = function () {
@@ -140,6 +140,8 @@ sysrecommender.recommend = function () {
 /* UI */
 sysrecommender.make_recommendation_item = function(div, videoID) {
 	var column = $('#'+div);
+	
+	console.log(column);
 	var item = $('<a>');
 	column.append(item);
 	
@@ -161,7 +163,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 sysrecommender.get_yt_info = function(item, videoID) {
 	var videoImg = new Image();
 	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
-	var thumbnail = $('<div>').append();
+	var thumbnail = $('<div>').append(videoImg);
 	thumbnail.addClass('pull-left');
 	item.append(thumbnail);
 	
