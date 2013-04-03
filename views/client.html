@@ -28,17 +28,11 @@
 		<!-- Main JS Entry point -->
 		<script src="scripts/main.js"></script>
 	</head>
-	
-	<body style="overflow: hidden; background: url('../images/samples-bg.png');">
+	<!-- background: url('../images/samples-bg.png');"> -->
+	<body style="overflow: hidden; background-color: #F4F4F4">
 		<div id="fb-root"></div>
 		<script src="scripts/facebook.js"></script>
 		<div class="container-fluid">
-			<!-- Header -->
-			<div class="row-fluid">
-				<div class="page-header">
-					<h1 class="offset4">Musicka<small> Social Music Recommender</small></h1>
-				</div>
-			</div>
 			<div class="row-fluid">
 				
 				<div class="span4" id="leftContentArea">
@@ -62,17 +56,23 @@
 				</div>
 				
 				<div class="span8" id="mainContentArea">
-					
+					<!--
+					<div class="row-fluid">
+						<h1>Musicka<small> Social Music Recommender</small></h1>
+					</div>
+					-->
 					<div id="wrap">
 						<div id="main">
-							
+							<!--
 							<div class="row-fluid">
 								<div class="span12 input-append">
 									<input class="input span10" id="songUrlField" type="text" placeholder="Add YouTube URL to playlist here..." value="">
 									<input class="btn btn-primary span2" type="button" id="addSongBtn" value="Add" />
 								</div>
 							</div>
-							
+							-->
+							<br />
+							<br />
 							<div class="row-fluid" id="alertArea"></div>
 							
 							<div class="row-fluid">
@@ -83,6 +83,8 @@
 										</div>
 									</div>
 								</div>
+								
+								<input class="btn btn-primary span2" type="button" />
 							</div>
 							
 							<!-- </br> -->
