@@ -7,6 +7,7 @@ function RecCellControl(parent, model) {
 
 RecCellControl.prototype._initUI = function() {
 	var content = $('<a>');
+	content.css({borderBottom : '1px solid #e2e2e2'});
 	content.addClass('row-fluid');
 	this.view.append(content);
 	
@@ -43,16 +44,14 @@ RecCellControl.prototype._initUI = function() {
 	addSong.click({ cell: this }, this._parent.onAddSong.bind(this._parent));
 	content.append(addSong);*/
 	
-	if(this._model._from === null) {
-		return;
+	if(this._model._from !== null) {
+		var sender = $('<div>').html('<br /> from ');
+		var senderURL = $('<a>').html(this._model._from);
+		senderURL.attr('href', '#');
+		senderURL.click(function() {
+			window.open(MUSICKA.Properties.FB_PATH + this._model._fromID, '_blank');
+		});
+		sender.append(senderURL);
+		details.append(sender);
 	}
-	
-	var sender = $('<div>').html('<br /> from ');
-	var senderURL = $('<a>').html(this._model._from);
-	senderURL.attr('href', '#');
-	senderURL.click(function() {
-		window.open(MUSICKA.Properties.FB_PATH + this._model._fromID, '_blank');
-	});
-	sender.append(senderURL);
-	details.append(sender);
 }
