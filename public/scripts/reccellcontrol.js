@@ -7,12 +7,16 @@ function RecCellControl(parent, model) {
 
 RecCellControl.prototype._initUI = function() {
 	var content = $('<a>');
-	content.addClass('clearfix');
+	content.addClass('row-fluid');
 	this.view.append(content);
 	
-	var thumbnail = $('<div>').append(this._model._videoImg);
-	thumbnail.addClass('pull-left');
+	var thumbnail = $('<div>').addClass('span4').append(this._model._videoImg);
+	//thumbnail.addClass('pull-left');
+	//thumbnail.children('img').addClass('img-polaroid');
 	content.append(thumbnail);
+	
+	var details = $('<div>').addClass('span8');
+	content.append(details);
 	
 	var remove = $('<a>');
 	remove.attr('href', '#');
@@ -24,14 +28,14 @@ RecCellControl.prototype._initUI = function() {
 	
 	var rowControls = $('<div>').append(remove);
 	rowControls.addClass('pull-right');
-	content.append(rowControls);
+	details.append(rowControls);
 	
 	var title = $('<a>').html(this._model._title);
 	title.attr('onClick', 'return false;');
 	title.attr('href', '#');
 	//title.click({ cell: this }, this._parent.onPlaySong.bind(this._parent));
 	title.click({ cell: this }, this._parent.onAddSong.bind(this._parent));
-	content.append(title);
+	details.append(title);
 	
 	/*var addSong = $('<a>').html('Add');
 	addSong.attr('href', '#');
@@ -50,5 +54,5 @@ RecCellControl.prototype._initUI = function() {
 		window.open(MUSICKA.Properties.FB_PATH + this._model._fromID, '_blank');
 	});
 	sender.append(senderURL);
-	content.append(sender);
+	details.append(sender);
 }
