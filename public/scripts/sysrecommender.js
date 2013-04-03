@@ -96,6 +96,7 @@ sysrecommender.process_playlists = function (res_json) {
 }
 
 sysrecommender.start_recommendation = function () {
+	/* send out requests for all friends' playlist */
 	this.retrieved = 0;
 	this.toRetrieve = this.friend_similarity.length;
 	for (var i in this.friend_similarity) {
@@ -106,7 +107,7 @@ sysrecommender.start_recommendation = function () {
 }
 
 sysrecommender.do_recommendation = function () {
-	/* algorithm work for recommendation here */
+	/* algorithm for recommendation here */
 	for (var i in this.friend_similarity) {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
@@ -165,16 +166,19 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	rowControls.addClass('pull-right');
 	item.append(rowControls);
 	
+	var videoImg = new Image();
+	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
+	videoImg.addClass('img-polaroid');
+	videoImg.addClass('pull-left');
+	item.append(thumbnail);
+	//var thumbnail = $('<div>').append(videoImg);
+	//thumbnail.addClass('pull-left');
+	//item.append(thumbnail);
+	
 	this.get_yt_info(item, videoID);
 }
 
 sysrecommender.get_yt_info = function(item, videoID) {
-	var videoImg = new Image();
-	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
-	var thumbnail = $('<div>').append(videoImg);
-	thumbnail.addClass('pull-left');
-	item.append(thumbnail);
-	
 	$.ajax({
 		dataType: 'jsonp',
 		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,

@@ -11,9 +11,10 @@ RecCellControl.prototype._initUI = function() {
 	content.addClass('row-fluid');
 	this.view.append(content);
 	
+	//this._model._videoImg.addClass('pull-left');
+	//this._model._videoImg.addClass('img-polaroid');
+	//content.append(this._model._videoImg);
 	var thumbnail = $('<div>').addClass('span4').append(this._model._videoImg);
-	//thumbnail.addClass('pull-left');
-	//thumbnail.children('img').addClass('img-polaroid');
 	content.append(thumbnail);
 	
 	var details = $('<div>').addClass('span8');
