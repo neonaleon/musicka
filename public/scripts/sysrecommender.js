@@ -113,6 +113,7 @@ sysrecommender.do_recommendation = function () {
 		var friend_id = this.friend_similarity[i][1];
 		for (var j = 0; j < this.topN_songs; j++) {
 			this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
+			//this.simi
 		}
 	}
 	this.end_recommendation();
@@ -127,7 +128,7 @@ sysrecommender.end_recommendation = function () {
 	lreclist.children().remove();
 	rreclist.children().remove();
 	for (var i in this.similar_recommendations) {
-		
+		this.make_recommendation_item('LRecList', this.similar_recommendations[i]);
 	}
 	for (var j in this.recommendations) {
 		this.make_recommendation_item('RRecList', this.recommendations[j]);
@@ -168,17 +169,20 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	
 	var videoImg = new Image();
 	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
-	videoImg.addClass('img-polaroid');
-	videoImg.addClass('pull-left');
+
+	var thumbnail = $('<div>').append(videoImg);
+	thumbnail.addClass('pull-left');
 	item.append(thumbnail);
-	//var thumbnail = $('<div>').append(videoImg);
-	//thumbnail.addClass('pull-left');
-	//item.append(thumbnail);
 	
-	this.get_yt_info(item, videoID);
+	this.get_yt_info(function(data) {
+		var title = $('<a>').html(data.title);
+		title.attr('onClick', 'return false;');
+		title.attr('href', '#');
+		item.append(title);
+	}, videoID);
 }
 
-sysrecommender.get_yt_info = function(item, videoID) {
+sysrecommender.get_yt_info = function(cb, videoID) {
 	$.ajax({
 		dataType: 'jsonp',
 		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,
@@ -186,10 +190,7 @@ sysrecommender.get_yt_info = function(item, videoID) {
 			if(typeof response.feed.entry === 'undefined') {
 				return;
 			}
-			var title = $('<a>').html(response.feed.entry[0].title.$t);
-			title.attr('onClick', 'return false;');
-			title.attr('href', '#');
-			item.append(title);
+			cb(response.feed.entry[0].title.$t);
 		}
 	});
 }

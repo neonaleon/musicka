@@ -252,16 +252,12 @@ function handle_recommend_retrieve_friends(req, res) {
 	graph.fql(query, function(err, fres) {
 		var friendList = fres.data;
 		if ( typeof friendList === 'undefined') {
-			res.json({
-				list : []
-			});
+			res.json({});
 			// handle another way...
 			return;
 		}
 		if(friendList.length <= 0) {
-			res.json({
-				list : []
-			});
+			res.json({});
 			return;
 		}
 		
