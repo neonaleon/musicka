@@ -48,9 +48,10 @@ RecCellControl.prototype._initUI = function() {
 	if(this._model._from !== null) {
 		var sender = $('<div>').html('<br /> from ');
 		var senderURL = $('<a>').html(this._model._from);
+		var senderID = this._model._fromID;
 		senderURL.attr('href', '#');
 		senderURL.click(function() {
-			window.open(MUSICKA.Properties.FB_PATH + this._model._fromID, '_blank');
+			window.open(MUSICKA.Properties.FB_PATH + senderID, '_blank');
 		});
 		sender.append(senderURL);
 		details.append(sender);
