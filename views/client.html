@@ -19,6 +19,8 @@
 		<script src="scripts/ytvideo.js"></script>
 		<script src="scripts/reccellcontrol.js"></script>
 		<script src="scripts/rectablecontrol.js"></script>
+		<script src="scripts/searchcellcontrol.js"></script>
+		<script src="scripts/searchmodalcontrol.js"></script>
 		<!-- Style -->
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap-responsive.css">
@@ -39,17 +41,15 @@
 			<div class="modal-header">
 				<form class="form-search">
 					<div class="input-append">
-						<input type="text" class="span10 search-query" placeholder="YouTube" id="songUrlField">
-						<button class="btn" type="button" id="addSongBtn">
+						<input type="text" class="span1 search-query" placeholder="YouTube" id="modalQueryField">
+						<button class="btn" type="button" id="modalQueryBtn">
 							Search
 						</button>
 					</div>
 				</form>
 			</div>
 			<div class="modal-body">
-				<p>
-					One fine body…
-				</p>
+				<ul class="nav nav-list" id="resultList"></ul>
 			</div>
 		</div>
 
