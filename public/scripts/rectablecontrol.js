@@ -18,7 +18,7 @@ RecTableControl.prototype.onGetRequests = function() {
 				continue;
 			}
 			
-			var model = new Recommend(req.data, req.id, req.from.name, req.from.id);
+			var model = new YTVideo(req.data, req.id, req.from.name, req.from.id);
 			self._recList[req.id] = model;
 			
 			var cell = new RecCellControl(self, model);

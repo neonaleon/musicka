@@ -7,13 +7,10 @@ function RecCellControl(parent, model) {
 
 RecCellControl.prototype._initUI = function() {
 	var content = $('<a>');
-	content.css({borderBottom : '1px solid #e2e2e2'});
+	content.css({borderBottom : '1px solid #d2d2d2'});
 	content.addClass('row-fluid');
 	this.view.append(content);
 	
-	//this._model._videoImg.addClass('pull-left');
-	//this._model._videoImg.addClass('img-polaroid');
-	//content.append(this._model._videoImg);
 	var thumbnail = $('<div>').addClass('span4').append(this._model._videoImg);
 	content.append(thumbnail);
 	

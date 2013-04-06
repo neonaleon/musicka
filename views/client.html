@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<title>Musicka</title>
-		
+
 		<meta name="viewport" content="user-scalable = no, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0" />
 		<!-- Imports -->
 		<script src="scripts/jquery.min.js"></script>
@@ -16,7 +16,7 @@
 		<script src="scripts/sylvester.js"></script>
 		<script src="scripts/clientcontrol.js"></script>
 		<script src="scripts/sysrecommender.js"></script>
-		<script src="scripts/recommend.js"></script>
+		<script src="scripts/ytvideo.js"></script>
 		<script src="scripts/reccellcontrol.js"></script>
 		<script src="scripts/rectablecontrol.js"></script>
 		<!-- Style -->
@@ -33,99 +33,137 @@
 	<body style="overflow: hidden; background-color: #F4F4F4">
 		<div id="fb-root"></div>
 		<script src="scripts/facebook.js"></script>
+
+		<!-- Youtube search dialog -->
+		<div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<form class="form-search">
+					<div class="input-append">
+						<input type="text" class="span10 search-query" placeholder="YouTube" id="songUrlField">
+						<button class="btn" type="button" id="addSongBtn">
+							Search
+						</button>
+					</div>
+				</form>
+			</div>
+			<div class="modal-body">
+				<p>
+					One fine body…
+				</p>
+			</div>
+		</div>
+
 		<div class="container-fluid">
 			<div class="row-fluid">
-				
+
 				<div class="span4" id="leftContentArea">
-					
-					<div class="row-fluid"><p class="nav-header">your playlist</p></div>
+
+					<div class="row-fluid">
+						<p class="nav-header">
+							your playlist
+						</p>
+					</div>
 					<div class="row-fluid">
 						<div style="height:380px; overflow:auto">
-							<ul class="nav nav-list" id="playList">
-							</ul>
+							<ul class="nav nav-list" id="playList"></ul>
 						</div>
 					</div>
-					
-					<div class="row-fluid"><p class="nav-header">your friends recommend</p></div>
+
+					<div class="row-fluid">
+						<p class="nav-header">
+							your friends recommend
+						</p>
+					</div>
 					<div class="row-fluid">
 						<div style="height:380px; overflow:auto">
-							<ul class="nav nav-list" id="requestList">
-							</ul>
+							<ul class="nav nav-list" id="requestList"></ul>
 						</div>
 					</div>
-				
+
 				</div>
-				
+
 				<div class="span8" id="mainContentArea">
 					<!--
 					<div class="row-fluid">
-						<h1>Musicka<small> Social Music Recommender</small></h1>
+					<h1>Musicka<small> Social Music Recommender</small></h1>
 					</div>
 					-->
 					<div id="wrap">
 						<div id="main">
-							<!--
-							<div class="row-fluid">
-								<div class="span12 input-append">
-									<input class="input span10" id="songUrlField" type="text" placeholder="Add YouTube URL to playlist here..." value="">
-									<input class="btn btn-primary span2" type="button" id="addSongBtn" value="Add" />
-								</div>
-							</div>
-							-->
-							<br />
-							<br />
+							</br>
+							</br>
 							<div class="row-fluid" id="alertArea"></div>
-							
+
 							<div class="row-fluid">
-								<div class="span10 video-wrapper">
+								<div class="span12 video-wrapper">
 									<div class="video-container">
 										<div id="ytapiplayer">
 											You need Flash player 8+ and JavaScript enabled to view this video.
 										</div>
 									</div>
 								</div>
-								
-								<input class="btn btn-primary span2" type="button" />
 							</div>
-							
+							</br>
+							<div class="span12 input-append">
+								<form class="form-search">
+									<div class="input-append">
+										<input type="text" class="span10 search-query" placeholder="YouTube" id="songUrlField">
+										<button class="btn" type="button" id="addSongBtn">
+											Search
+										</button>
+									</div>
+								</form>
+								<!--
+								<input class="input span10" id="songUrlField" type="text" placeholder="Add YouTube URL to playlist here..." value="">
+								<input class="btn btn-primary span2" type="button" id="addSongBtn" value="Add" />
+								-->
+							</div>
 							<!-- </br> -->
-							<!-- Rater 
+							<!-- Rater
 							<div class="row-fluid">
-								<div class="span2 offset8">
-									<input type="radio" class="rateStar" value="1"/>
-									<input type="radio" class="rateStar" value="2"/>
-									<input type="radio" class="rateStar" value="3"/>
-									<input type="radio" class="rateStar" value="4"/>
-									<input type="radio" class="rateStar" value="5"/>
-								</div>
+							<div class="span2 offset8">
+							<input type="radio" class="rateStar" value="1"/>
+							<input type="radio" class="rateStar" value="2"/>
+							<input type="radio" class="rateStar" value="3"/>
+							<input type="radio" class="rateStar" value="4"/>
+							<input type="radio" class="rateStar" value="5"/>
+							</div>
 							</div>
 							-->
 						</div>
 					</div>
-					
+
 					<div class="row-fluid" id="footer">
 						<div class="row-fluid">
-							<p class="nav-header">musicka recommends</p>
+							<p class="nav-header">
+								musicka recommends
+							</p>
 						</div>
 						<div class="row-fluid">
 							<div class="span6">
-								<div class="row-fluid"><p class="nav-header">similar</p></div>
+								<div class="row-fluid">
+									<p class="nav-header">
+										similar
+									</p>
+								</div>
 								<div style="height:380px; overflow:auto">
-									<ul class="nav nav-list" id="LRecList">
-									</ul>
+									<ul class="nav nav-list" id="LRecList"></ul>
 								</div>
 							</div>
 							<div class="span6">
-								<div class="row-fluid"><p class="nav-header">random</p></div>
+								<div class="row-fluid">
+									<p class="nav-header">
+										random
+									</p>
+								</div>
 								<div style="height:380px; overflow:auto">
-									<ul class="nav nav-list" id="RRecList">
-									</ul>
+									<ul class="nav nav-list" id="RRecList"></ul>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
 	</body>
