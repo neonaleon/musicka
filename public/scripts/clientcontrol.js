@@ -73,6 +73,17 @@ ClientControl.prototype.init = function() {
 	
 	// Load element functions
 	$('#'+MUSICKA.Element.SEARCH_BTN_ID).click(this._onSearchSong.bind(this));
+	$('#'+MUSICKA.Element.SEARCH_FIELD_ID).keydown(function(event) {
+		if(event.keyCode == 13) {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$('#'+MUSICKA.Element.SEARCH_FIELD_ID).keyup(function(event) {
+		if(event.keyCode == 13) {
+			$('#'+MUSICKA.Element.SEARCH_BTN_ID).click();
+		}
+	});
 	$('input.rateStar').rating({ callback: self._rateSong.bind(this) });
 	
 	// Set elements to same height as embedded video player
@@ -205,8 +216,6 @@ ClientControl.prototype._onSearchSong = function() {
 	} else {
 		this._searchController.search(videoID);
 	}
-	
-	//this._addSongModelView(videoID);
 }
 
 ClientControl.prototype._onRateSong = function(videoID, rate) {

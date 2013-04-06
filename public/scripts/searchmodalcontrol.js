@@ -8,7 +8,19 @@ function SearchModalControl(client, playlist) {
 	this._queryView		= $('#'+MUSICKA.Element.MODAL_INPUT_ID);
 	this._resultView	= $('#'+MUSICKA.Element.SEARCH_LIST_ID);
 	
+	var self = this;
 	this._queryBtnView.click(this._search.bind(this));
+	this._queryView.keydown(function(event) {
+		if(event.keyCode == 13) {
+			event.preventDefault();
+			return false;
+		}
+	});
+	this._queryView.keyup(function(event) {
+		if(event.keyCode == 13) {
+			self._queryBtnView.click();
+		}
+	});
 }
 
 SearchModalControl.prototype.search = function(query) {

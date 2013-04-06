@@ -39,14 +39,12 @@
 		<!-- Youtube search dialog -->
 		<div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 			<div class="modal-header">
-				<form class="form-search">
-					<div class="input-append">
-						<input type="text" class="span1 search-query" placeholder="YouTube" id="modalQueryField">
-						<button class="btn" type="button" id="modalQueryBtn">
-							Search
-						</button>
-					</div>
-				</form>
+				<div class="row-fluid input-append">
+					<input type="text" class="span10" placeholder="YouTube" id="modalQueryField">
+					<button class="btn" type="button" id="modalQueryBtn">
+						Search
+					</button>
+				</div>
 			</div>
 			<div class="modal-body">
 				<ul class="nav nav-list" id="resultList"></ul>
@@ -104,20 +102,16 @@
 								</div>
 							</div>
 							</br>
-							<div class="span12 input-append">
-								<form class="form-search">
-									<div class="input-append">
-										<input type="text" class="span10 search-query" placeholder="YouTube" id="songUrlField">
-										<button class="btn" type="button" id="addSongBtn">
-											Search
-										</button>
-									</div>
-								</form>
+							<div class="input-append span12">
+								<input type="text" class="span8" placeholder="YouTube" id="songUrlField">
+								<button class="btn" type="button" id="addSongBtn">
+									Search
+								</button>
+							</div>
 								<!--
 								<input class="input span10" id="songUrlField" type="text" placeholder="Add YouTube URL to playlist here..." value="">
 								<input class="btn btn-primary span2" type="button" id="addSongBtn" value="Add" />
 								-->
-							</div>
 							<!-- </br> -->
 							<!-- Rater
 							<div class="row-fluid">
