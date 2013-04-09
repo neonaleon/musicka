@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<title>Musicka</title>
-		
+
 		<meta name="viewport" content="user-scalable = no, initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0" />
 		<!-- Imports -->
 		<script src="scripts/jquery.min.js"></script>
@@ -16,9 +16,11 @@
 		<script src="scripts/sylvester.js"></script>
 		<script src="scripts/clientcontrol.js"></script>
 		<script src="scripts/sysrecommender.js"></script>
-		<script src="scripts/recommend.js"></script>
+		<script src="scripts/ytvideo.js"></script>
 		<script src="scripts/reccellcontrol.js"></script>
 		<script src="scripts/rectablecontrol.js"></script>
+		<script src="scripts/searchcellcontrol.js"></script>
+		<script src="scripts/searchmodalcontrol.js"></script>
 		<!-- Style -->
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap.css">
 		<link rel="stylesheet" type="text/css" href="bootstrap/bootstrap-responsive.css">
@@ -34,9 +36,23 @@
 		<div id="fb-root"></div>
 		<script src="scripts/facebook.js"></script>
 		<br /><br />
+		<!-- Youtube search dialog -->
+		<div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<div class="row-fluid input-append">
+					<input type="text" class="span10" placeholder="YouTube" id="modalQueryField">
+					<button class="btn" type="button" id="modalQueryBtn">
+						Search
+					</button>
+				</div>
+			</div>
+			<div class="modal-body">
+				<ul class="nav nav-list" id="resultList"></ul>
+			</div>
+		</div>
 		<div class="container-fluid">
 			<div class="row-fluid">
-				
+
 				<div class="span4" id="leftContentArea">
 					<div class="row-fluid"><p class="nav-header">your playlist</p></div>
 					<div class="row-fluid">
@@ -45,83 +61,82 @@
 							</ul>
 						</div>
 					</div>
-					<!--
-					<div class="row-fluid"><p class="nav-header">your friends recommend</p></div>
-					<div class="row-fluid">
-						<div style="height:380px; overflow:auto">
-							<ul class="nav nav-list" id="requestList">
-							</ul>
-						</div>
-					</div>
-					-->
 				</div>
-				
+
 				<div class="span8" id="mainContentArea">
 					<!--
 					<div class="row-fluid">
-						<h1>Musicka<small> Social Music Recommender</small></h1>
+					<h1>Musicka<small> Social Music Recommender</small></h1>
 					</div>
 					-->
 					<div id="wrap">
 						<div id="main">
 							
 							<div class="row-fluid">
-								<div class="span12 input-append">
-									<input class="input span10" id="songUrlField" type="text" placeholder="Add YouTube URL to playlist here..." value="">
-									<input class="btn btn-primary span2" type="button" id="addSongBtn" value="Add" />
+								<div class="input-append span12">
+									<input type="text" class="span8" placeholder="YouTube" id="songUrlField">
+									<button class="btn" type="button" id="addSongBtn">
+										Search
+									</button>
 								</div>
 							</div>
-														
 							<div class="row-fluid" id="alertArea"></div>
-							
+
 							<div class="row-fluid">
-								<div class="span10 video-wrapper">
+								<div class="span12 video-wrapper">
 									<div class="video-container">
 										<div id="ytapiplayer">
 											You need Flash player 8+ and JavaScript enabled to view this video.
 										</div>
 									</div>
 								</div>
-								
-								<input class="btn btn-primary span2" type="button" />
 							</div>
 							
+								<!--
+								<input class="input span10" id="songUrlField" type="text" placeholder="Add YouTube URL to playlist here..." value="">
+								<input class="btn btn-primary span2" type="button" id="addSongBtn" value="Add" />
+								-->
 							<!-- </br> -->
-							<!-- Rater 
+							<!-- Rater
 							<div class="row-fluid">
-								<div class="span2 offset8">
-									<input type="radio" class="rateStar" value="1"/>
-									<input type="radio" class="rateStar" value="2"/>
-									<input type="radio" class="rateStar" value="3"/>
-									<input type="radio" class="rateStar" value="4"/>
-									<input type="radio" class="rateStar" value="5"/>
-								</div>
+							<div class="span2 offset8">
+							<input type="radio" class="rateStar" value="1"/>
+							<input type="radio" class="rateStar" value="2"/>
+							<input type="radio" class="rateStar" value="3"/>
+							<input type="radio" class="rateStar" value="4"/>
+							<input type="radio" class="rateStar" value="5"/>
+							</div>
 							</div>
 							-->
 						</div>
 					</div>
-					
+					<br />
 					<div class="row-fluid" id="footer">
-						<br />
 						<div class="row-fluid">
 							<div class="span6">
-								<div class="row-fluid"><p class="nav-header">your friends recommend</p></div>
-								<div style="overflow:auto" id="LRecListDiv">
-									<ul class="nav nav-list" id="LRecList">
-									</ul>
+								<div class="row-fluid">
+									<p class="nav-header">
+										your friends recommend
+									</p>
+								</div>
+								<div style="height:380px; overflow:auto">
+									<ul class="nav nav-list" id="LRecList"></ul>
 								</div>
 							</div>
 							<div class="span6">
-								<div class="row-fluid"><p class="nav-header">musicka recommends</p></div>
-								<div style="overflow:auto" id="RRecListDiv">
-									<ul class="nav nav-list" id="RRecList">
-									</ul>
+								<div class="row-fluid">
+									<p class="nav-header">
+										musicka recommends
+									</p>
+								</div>
+								<div style="height:380px; overflow:auto">
+									<ul class="nav nav-list" id="RRecList"></ul>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				
+
 			</div>
 		</div>
 	</body>

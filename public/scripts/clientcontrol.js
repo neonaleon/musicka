@@ -1,6 +1,7 @@
 function ClientControl(model) {
 	this._model = model;
 	this._player = null;
+	this._searchController = null;
 	this.toLoad = 0; // the number of songs in the playlist to load on init
 	this._isInit = false;
 	
@@ -71,7 +72,18 @@ ClientControl.prototype.init = function() {
 		'8', null, null, params, atts);
 	
 	// Load element functions
-	$('#'+MUSICKA.Element.ADD_SONG_BTN_ID).click(this._onAddSong.bind(this));
+	$('#'+MUSICKA.Element.SEARCH_BTN_ID).click(this._onSearchSong.bind(this));
+	$('#'+MUSICKA.Element.SEARCH_FIELD_ID).keydown(function(event) {
+		if(event.keyCode == 13) {
+			event.preventDefault();
+			return false;
+		}
+	});
+	$('#'+MUSICKA.Element.SEARCH_FIELD_ID).keyup(function(event) {
+		if(event.keyCode == 13) {
+			$('#'+MUSICKA.Element.SEARCH_BTN_ID).click();
+		}
+	});
 	$('input.rateStar').rating({ callback: self._rateSong.bind(this) });
 	
 	// Set elements to same height as embedded video player
@@ -90,8 +102,9 @@ ClientControl.prototype.init = function() {
 	// TODO Test recommendations
 	//this._getRecommend();
 	
-	// Add app request view controller
+	// Add view controllers
 	var requestController = new RecTableControl(this);
+	this._searchController = new SearchModalControl(this, this._model);
 	
 	this._isInit = true;
 }
@@ -122,26 +135,26 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 		inform = true;
 	}
 
-	var control = this;
+	var self = this;
 	$.ajax({
 		dataType: 'jsonp',
 		url: MUSICKA.Properties.YTPATH + "feeds/api/videos?format=5&alt=json-in-script&vq=" + videoID,
 		success: function(response) {
 			if(typeof response.feed.entry === 'undefined') {
-				control._alert('error', "YouTube video does not exist");
+				self._alert('error', "YouTube video does not exist");
 				return;
 			}
 			
 			// Video is available
-			var videoID = control._parseURL(response.feed.entry[0].link[0].href);
-			if(control._model.containsSong(videoID)) {
+			var videoID = self._parseURL(response.feed.entry[0].link[0].href);
+			if(self._model.containsSong(videoID)) {
 				return;
 			}
 			
-			control._model.addSong(videoID, response.feed.entry[0].title.$t, rate);
+			self._model.addSong(videoID, response.feed.entry[0].title.$t, rate);
 			// Play video now if none are playing
-			if(!control._model.nowPlaying()) {
-				control._onPlaySong(videoID);
+			if(!self._model.nowPlaying()) {
+				self._onPlaySong(videoID);
 			}
 			
 			// Add row to html view
@@ -153,7 +166,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 			var title = $('<a>').html(response.feed.entry[0].title.$t);
 			title.attr('href', response.feed.entry[0].link[0].href);
 			title.attr('onClick', 'return false;');
-			title.click({video: videoID}, control._onPlaySong.bind(control));
+			title.click({video: videoID}, self._onPlaySong.bind(self));
 			row.append(title);
 			
 			var recommend = $('<a>');
@@ -162,7 +175,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 			recommend.attr('data-original-title', 'Recommend to a friend');
 			recommend.append($('<i class=\"icon-user\">'));
 			recommend.tooltip({ placement: 'right' });
-			recommend.click({ video: videoID }, control._recommendSong.bind(control));
+			recommend.click({ video: videoID }, self._recommendSong.bind(self));
 			
 			var remove = $('<a>');
 			remove.attr('href', '#');
@@ -170,7 +183,7 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 			remove.attr('data-original-title', 'Delete');
 			remove.tooltip({ placement:'right' });
 			remove.append($('<i class=\"icon-trash\">'));
-			remove.click({ video: videoID }, control._removeSong.bind(control));
+			remove.click({ video: videoID }, self._removeSong.bind(self));
 			
 			var rowControls = $('<div>').append(recommend, remove);
 			rowControls.addClass('pull-right');
@@ -178,8 +191,8 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 			
 			playList.append(row);
 			
-			control.toLoad -= 1;
-			if (control.toLoad == 0) { control._onInitLoad(); }
+			self.toLoad -= 1;
+			if (self.toLoad == 0) { self._onInitLoad(); }
 			
 			// Inform server of added song
 			if(!inform) {
@@ -194,17 +207,19 @@ ClientControl.prototype._addSongModelView = function(videoID, rating, informServ
 	});
 }
 
-ClientControl.prototype._onAddSong = function() {
-	var inputField = $('#'+MUSICKA.Element.INPUT_FIELD_ID)[0];
-	var videoID = this._parseURL(inputField.value);
-	inputField.value = '';
-	
-	if(!videoID) {
-		this._alert('error', "YouTube link is invalid");
+ClientControl.prototype._onSearchSong = function() {
+	var query = $('#'+MUSICKA.Element.SEARCH_FIELD_ID)[0].value;
+	query = $.trim(query);
+	if(query == '') {
 		return;
 	}
+	var videoID = this._parseURL(query);
 	
-	this._addSongModelView(videoID);
+	if(!videoID) {
+		this._searchController.search(query);
+	} else {
+		this._searchController.search(videoID);
+	}
 }
 
 ClientControl.prototype._onRateSong = function(videoID, rate) {
