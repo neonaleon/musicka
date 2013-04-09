@@ -56,7 +56,9 @@ sysrecommender.add_song = function (song_id) {
 sysrecommender.on_add_song = function (response, userData) {
 	/* handler for when async echonest search returns */
 	var song_vector = this.extract_song_data(response);
-	this.song_vectors[userData.song.id] = song_vector;
+	this.song_vectors[userData.song.videoID] = song_vector;
+	this.save_song_vector(userData.song.videoID, song_vector);
+	
 	this.playlist_vector = this.playlist_vector.add(song_vector);
 	this.save_playlist_vector();
 }
@@ -113,7 +115,6 @@ sysrecommender.do_recommendation = function () {
 		var friend_id = this.friend_similarity[i][1];
 		for (var j = 0; j < this.topN_songs; j++) {
 			this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
-			//this.simi
 		}
 	}
 	this.end_recommendation();
@@ -123,13 +124,8 @@ sysrecommender.end_recommendation = function () {
 	/* end the recommendation by showing the UI */
 	// jquery the document
 	// draw the ui
-	var lreclist = $('#LRecList');
 	var rreclist = $('#RRecList');
-	lreclist.children().remove();
 	rreclist.children().remove();
-	for (var i in this.similar_recommendations) {
-		this.make_recommendation_item('LRecList', this.similar_recommendations[i]);
-	}
 	for (var j in this.recommendations) {
 		this.make_recommendation_item('RRecList', this.recommendations[j]);
 	}
@@ -176,8 +172,8 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	
 	this.get_yt_info(function(data) {
 		var title = $('<a>').html(data.title);
-		title.attr('onClick', 'return false;');
-		title.attr('href', '#');
+		//title.attr('onClick', 'return false;');
+		//title.attr('href', '#');
 		item.append(title);
 	}, videoID);
 }
@@ -206,6 +202,21 @@ sysrecommender.save_playlist_vector = function () {
 		},
 		success	: function (response) {
 			console.log("save : " + response);
+		}
+	});
+}
+
+sysrecommender.save_song_vector = function (id, song_vector) {
+	console.log(id, song_vector);
+	$.ajax({
+		type	: 'post',
+		url		: 'recommend/store_song_vector',
+		data	: {
+			id: id,
+			array: song_vector.elements,
+		},
+		success	: function (response) {
+			console.log("save song vec: " + response);
 		}
 	});
 }

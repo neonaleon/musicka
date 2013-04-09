@@ -18,6 +18,8 @@ var verifier = new decoder(FACEBOOK_APP_SECRET);
 var client = new pg.Client(PG_CONNECT_STR);
 client.connect();
 
+query = client.query("CREATE TABLE song_vectors (id varchar(11) PRIMARY KEY, vector integer ARRAY[30])");
+
 // create an express webserver
 var app = express();
 
@@ -196,6 +198,7 @@ function handle_define_js(req, res) {
 
 /* Recommendations */
 function handle_recommend_store(req, res) {
+	/* stores a user's playlist vector */
 	var fb = verifier.decode(req.body.sr);
 	if (fb === null) {
 		res.send('Bad request');
@@ -220,6 +223,7 @@ function handle_recommend_store(req, res) {
 }
 
 function handle_recommend_retrieve(req, res) {
+	/* retrieves user playlist vector */
 	var fb = verifier.decode(req.body.sr);
 	if (fb === null) {
 		res.send('Bad request');
@@ -280,13 +284,38 @@ function handle_recommend_retrieve_friends(req, res) {
 }
 
 function handle_recommend_getlist_friend(req, res) {
+	/* retrieves list of songs from a friend's playlist */
 	var query = client.query("SELECT song FROM user_playlist WHERE id = '" + req.body.id + "'");
+	var response_obj = { vectors: {}, };
 	var playlist = [];
 	query.on('row', function(row) {
 		playlist.push( row.song );
+		var q = client.query("SELECT vector FROM song_vectors WHERE id = '" + row.song + "'");
+		q.on('row', function(r) {
+			response_obj.vectors[r.id] = r.vector;
+		});
 	});
 	query.on('end', function(result) {
-		res.json({ playlist: playlist });
+		response_obj.playlist = playlist;
+		res.json(response_obj);
+	});
+}
+
+function handle_store_song_vector(req, res) {
+	var songID = req.body.id;
+	var array = req.body.array;
+	for (var i in array) {
+		array[i] = parseInt(array[i]);
+	}
+	var query = client.query("SELECT vector FROM song_vectors WHERE id = '" + songID + "'");
+	query.on('end', function(result) {
+		var query2;
+		if (result.rowCount > 0) {
+			query2 = client.query("UPDATE song_vectors SET vector = ARRAY[" + array + "] WHERE id = '" + songID + "'");
+		} else {
+			query2 = client.query("INSERT INTO song_vectors(id, vector) values('" + songID + "', ARRAY[" + array + "])");
+		}
+		res.send('OK');
 	});
 }
 
@@ -318,3 +347,5 @@ app.get('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
 app.post('/recommend/retrieve_friends', handle_recommend_retrieve_friends);
 
 app.post('/recommend/get_friend_playlist', handle_recommend_getlist_friend);
+
+app.post('/recommend/store_song_vector', handle_store_song_vector);
