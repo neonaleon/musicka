@@ -18,7 +18,7 @@ var verifier = new decoder(FACEBOOK_APP_SECRET);
 var client = new pg.Client(PG_CONNECT_STR);
 client.connect();
 
-query = client.query("CREATE TABLE song_vectors (id varchar(11) PRIMARY KEY, vector integer ARRAY[30])");
+//query = client.query("CREATE TABLE song_vectors (id varchar(11) PRIMARY KEY, vector integer ARRAY[30])");
 
 // create an express webserver
 var app = express();

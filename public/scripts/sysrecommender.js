@@ -148,7 +148,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	var column = $('#'+div);
 	
 	var item = $('<a>');
-	item.addClass('clearfix');
+	item.css({borderBottom : '1px solid #d2d2d2'});
 	column.append(item);
 	
 	var remove = $('<a>');
@@ -166,15 +166,15 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	var videoImg = new Image();
 	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
 
-	var thumbnail = $('<div>').append(videoImg);
-	thumbnail.addClass('pull-left');
+	var thumbnail = $('<div>').addClass('span4').append(videoImg);
 	item.append(thumbnail);
+	
+	var details = $('<div>').addClass('span8');
+	item.append(details);
 	
 	this.get_yt_info(function(data) {
 		var title = $('<a>').html(data.title);
-		//title.attr('onClick', 'return false;');
-		//title.attr('href', '#');
-		item.append(title);
+		details.append(title);
 	}, videoID);
 }
 
@@ -186,7 +186,7 @@ sysrecommender.get_yt_info = function(cb, videoID) {
 			if(typeof response.feed.entry === 'undefined') {
 				return;
 			}
-			cb(response.feed.entry[0].title.$t);
+			cb({ title: response.feed.entry[0].title.$t });
 		}
 	});
 }
