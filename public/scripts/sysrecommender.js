@@ -137,10 +137,10 @@ sysrecommender.end_recommendation = function () {
 	/* end the recommendation by showing the UI */
 	// jquery the document
 	// draw the ui
-	var rreclist = $('#'+SYSRECOM_LIST_ID);
+	var rreclist = $('#'+MUSICKA.Element.SYSRECOM_LIST_ID);
 	rreclist.children().remove();
 	for (var j in this.recommendations) {
-		this.make_recommendation_item(SYSRECOM_LIST_ID, this.recommendations[j]);
+		this.make_recommendation_item(MUSICKA.Element.SYSRECOM_LIST_ID, this.recommendations[j]);
 	}
 	console.log("end recommendations: ", this.recommendations);
 }
