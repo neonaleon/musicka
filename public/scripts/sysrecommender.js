@@ -118,6 +118,7 @@ sysrecommender.do_recommendation = function () {
 			// random version
 			//this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
 			var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
+			if (similar.length == 0) continue;
 			this.recommendations[i*this.topN_songs+j] = similar[j][1];
 			console.log(similar);
 		}
@@ -131,7 +132,7 @@ sysrecommender.top_similar_songs = function (song_vectors) {
 		similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
 	}
 	similar.sort( function(a, b){ return b[0] - a[0]; } );
-	console.log(similar);
+	console.log("similar:", similar);
 	return similar;
 }
 
@@ -265,7 +266,7 @@ sysrecommender.get_friend_playlist = function (id) {
 		},
 		success : function (response) {
 			sysrecommender.retrieved += 1;
-			console.log(response);
+			console.log("getlist res: ", response);
 			sysrecommender.friend_playlists[id] = response.playlist;
 			sysrecommender.friend_song_vectors[id] = response.vectors;
 			if (sysrecommender.retrieved == sysrecommender.toRetrieve)

@@ -295,19 +295,19 @@ function handle_recommend_getlist_friend(req, res) {
 	});
 	query.on('end', function(result) {
 		response_obj.playlist = playlist;
-	});
-	var q = "SELECT id, vector FROM song_vectors WHERE id IN ('" + playlist[0] + "'";
-	for(var i = 1; i < playlist.length; i++) {
-		q += ",'" + playlist[i] + "'";
-	}
-	q += ")";
-	var query2 = client.query(q);
-	query2.on('row', function(row) {
-		response_obj.vectors[row.id] = row.vector;
-	});
-	query2.on('end', function(result) {
-		console.log(response_obj);
-		res.json(response_obj);
+		var q = "SELECT id, vector FROM song_vectors WHERE id IN ('" + playlist[0] + "'";
+		for(var i = 1; i < playlist.length; i++) {
+			q += ",'" + playlist[i] + "'";
+		}
+		q += ")";
+		var query2 = client.query(q);
+		query2.on('row', function(row) {
+			response_obj.vectors[row.id] = row.vector;
+		});
+		query2.on('end', function(result) {
+			console.log(response_obj);
+			res.json(response_obj);
+		});
 	});
 }
 
