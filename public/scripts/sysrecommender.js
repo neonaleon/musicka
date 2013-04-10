@@ -14,6 +14,7 @@ var sysrecommender = {
 	
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlists: {}, // { userID : [ songIDs ] }
+	friend_song_vectors: {},
 	
 	recommend_interval: 5000, // update recommendations every 30 seconds
 
@@ -114,20 +115,32 @@ sysrecommender.do_recommendation = function () {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
 		for (var j = 0; j < this.topN_songs; j++) {
-			this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
+			// random version
+			//this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
+			var similar = top_similar_songs(this.friend_song_vectors[friend_id]);
+			this.recommendations[i*this.topN_songs+j] = similar[j];
 		}
 	}
 	this.end_recommendation();
+}
+
+sysrecommender.top_similar_songs = function (song_vectors) {
+	var similar = [];
+	for (var k in song_vectors) {
+		similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
+	}
+	similar.sort( function(a, b){ return b[0] - a[0]; } );
+	return similar;
 }
 
 sysrecommender.end_recommendation = function () {
 	/* end the recommendation by showing the UI */
 	// jquery the document
 	// draw the ui
-	var rreclist = $('#RRecList');
+	var rreclist = $('#'+SYSRECOM_LIST_ID);
 	rreclist.children().remove();
 	for (var j in this.recommendations) {
-		this.make_recommendation_item('RRecList', this.recommendations[j]);
+		this.make_recommendation_item(SYSRECOM_LIST_ID, this.recommendations[j]);
 	}
 	console.log("end recommendations: ", this.recommendations);
 }
@@ -174,6 +187,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	
 	this.get_yt_info(function(data) {
 		var title = $('<a>').html(data.title);
+		title.click(function(){ $('#'+MUSICKA.Properties.YTPLAYER)[0].loadVideoById(videoID); });
 		details.append(title);
 	}, videoID);
 }
@@ -247,6 +261,7 @@ sysrecommender.get_friend_playlist = function (id) {
 		success : function (response) {
 			sysrecommender.retrieved += 1;
 			sysrecommender.friend_playlists[id] = response.playlist;
+			sysrecommender.friend_song_vectors[id] = response.vectors;
 			if (sysrecommender.retrieved == sysrecommender.toRetrieve)
 				sysrecommender.do_recommendation();
 		},

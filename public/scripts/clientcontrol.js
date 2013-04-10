@@ -90,7 +90,7 @@ ClientControl.prototype.init = function() {
 	//$('#playListDiv').css('height', document.body.offsetHeight*0.5);
     //$('#recommendListDiv').css('height', document.body.offsetHeight*0.5);
     var h = document.body.offsetHeight * 0.8 - parseInt($('#mytplayer').css('height'));
-    console.log(h);
+    console.log($('#'+MUSICKA.Element.RECOM_LIST_ID+'Div').css('bottom'));
     $('#'+MUSICKA.Element.RECOM_LIST_ID+'Div').css('height', h);
     $('#'+MUSICKA.Element.SYSRECOM_LIST_ID+'Div').css('height', h);
     $('#'+MUSICKA.Element.PLAYLIST_ID+'Div').css('height', document.body.offsetHeight );

@@ -29,11 +29,12 @@ RecCellControl.prototype._initUI = function() {
 	rowControls.addClass('pull-right');
 	details.append(rowControls);
 	
+	var self = this;
 	var title = $('<a>').html(this._model._title);
 	title.attr('onClick', 'return false;');
 	title.attr('href', '#');
-	//title.click({ cell: this }, this._parent.onPlaySong.bind(this._parent));
-	title.click({ cell: this }, this._parent.onAddSong.bind(this._parent));
+	title.click(function(){ $('#'+MUSICKA.Properties.YTPLAYER)[0].loadVideoById(self._model._videoID); });
+	//title.click({ cell: this }, this._parent.onAddSong.bind(this._parent));
 	details.append(title);
 	
 	/*var addSong = $('<a>').html('Add');
