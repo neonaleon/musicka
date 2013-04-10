@@ -291,6 +291,7 @@ function handle_recommend_getlist_friend(req, res) {
 	var playlist = [];
 	query.on('row', function(row) {
 		playlist.push( row.song );
+		console.log(row.song, "SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
 		var q = client.query("SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
 		q.on('row', function(r) {
 			response_obj.vectors[r.id] = r.vector;
