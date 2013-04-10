@@ -303,11 +303,11 @@ function handle_recommend_getlist_friend(req, res) {
 	q += ")";
 	var query2 = client.query(q);
 	query2.on('row', function(row) {
-		response_object.vectors[row.id] = row.vector;
+		response_obj.vectors[row.id] = row.vector;
 	});
 	query2.on('end', function(result) {
-		console.log(response_object);
-		res.json(response_object);
+		console.log(response_obj);
+		res.json(response_obj);
 	});
 }
 
