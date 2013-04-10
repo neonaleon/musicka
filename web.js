@@ -292,10 +292,6 @@ function handle_recommend_getlist_friend(req, res) {
 	query.on('row', function(row) {
 		playlist.push( row.song );
 		//console.log(row.song, "SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
-		var q = 
-		q.on('row', function(r) {
-			response_obj.vectors[r.id] = r.vector;
-		});
 	});
 	query.on('end', function(result) {
 		response_obj.playlist = playlist;
