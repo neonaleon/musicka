@@ -114,7 +114,6 @@ sysrecommender.do_recommendation = function () {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
 		var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
-		console.log("similar:", similar);
 		for (var j = 0; j < this.topN_songs; j++) {
 			if (similar.length == 0) continue;
 			this.recommendations[ i * this.topN_songs + j ] = similar[j][1];
@@ -128,6 +127,7 @@ sysrecommender.random_songs = function (friend_id) {
 }
 
 sysrecommender.top_similar_songs = function (song_vectors) {
+	console.log("song_vectors: ", song_vectors);
 	var similar = [];
 	for (var k in song_vectors) {
 		similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
