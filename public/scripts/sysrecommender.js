@@ -162,6 +162,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	
 	var item = $('<a>');
 	item.css({borderBottom : '1px solid #d2d2d2'});
+	item.addClass('row-fluid');
 	column.append(item);
 	
 	var remove = $('<a>');
@@ -187,6 +188,8 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	
 	this.get_yt_info(function(data) {
 		var title = $('<a>').html(data.title);
+		title.attr('onClick', 'return false;');
+		title.attr('href', '#');
 		title.click(function(){ $('#'+MUSICKA.Properties.YTPLAYER)[0].loadVideoById(videoID); });
 		details.append(title);
 	}, videoID);
