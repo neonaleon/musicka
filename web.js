@@ -296,7 +296,7 @@ function handle_recommend_getlist_friend(req, res) {
 	query.on('end', function(result) {
 		response_obj.playlist = playlist;
 	});
-	var q = "SELECT id, vector FROM playlist_vectors WHERE id IN ('" + playlist[0] + "'";
+	var q = "SELECT id, vector FROM song_vectors WHERE id IN ('" + playlist[0] + "'";
 	for(var i = 1; i < playlist.length; i++) {
 		q += ",'" + playlist[i] + "'";
 	}
