@@ -16,7 +16,7 @@ var sysrecommender = {
 	friend_playlists: {}, // { userID : [ songIDs ] }
 	friend_song_vectors: {}, // { friendID : { songID : songVector } } }
 	
-	recommend_interval: 60000, // update recommendations every 30 seconds
+	recommend_interval: 10000, // update recommendations every 30 seconds
 
 	topN_friends: 5,
 	topN_songs: 1, // show 1 song in topN users' playlist
@@ -171,7 +171,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	remove.attr('href', '#');
 	remove.attr('rel', 'tooltip');
 	remove.attr('data-original-title', 'Remove');
-	remove.tooltip({ placement:'right' });
+	remove.tooltip({ placement:'left' });
 	remove.append($('<i class=\"icon-remove-sign\">'));
 	remove.click(function() { item.remove(); });
 	
