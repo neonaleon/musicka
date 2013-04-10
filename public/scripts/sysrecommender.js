@@ -174,10 +174,6 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	remove.tooltip({ placement:'right' });
 	remove.append($('<i class=\"icon-remove-sign\">'));
 	remove.click(function() { item.remove(); });
-
-	var rowControls = $('<div>').append(remove);
-	rowControls.addClass('pull-right');
-	item.append(rowControls);
 	
 	var videoImg = new Image();
 	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
@@ -187,6 +183,10 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	
 	var details = $('<div>').addClass('span8');
 	item.append(details);
+	
+	var rowControls = $('<div>').append(remove);
+	rowControls.addClass('pull-right');
+	details.append(rowControls);
 	
 	this.get_yt_info(function(data) {
 		var title = $('<a>').html(data.title);
