@@ -14,7 +14,7 @@ var sysrecommender = {
 	
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlists: {}, // { userID : [ songIDs ] }
-	friend_song_vectors: {},
+	friend_song_vectors: {}, // { friendID : { songID : songVector } } }
 	
 	recommend_interval: 5000, // update recommendations every 30 seconds
 
@@ -26,7 +26,6 @@ var sysrecommender = {
 	
 	focused: true,
 	
-	similar_recommendations: [],
 	recommendations: [],
 }
 
@@ -115,6 +114,7 @@ sysrecommender.do_recommendation = function () {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
 		var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
+		console.log("similar:", similar);
 		for (var j = 0; j < this.topN_songs; j++) {
 			if (similar.length == 0) continue;
 			this.recommendations[ i * this.topN_songs + j ] = similar[j][1];
@@ -133,7 +133,6 @@ sysrecommender.top_similar_songs = function (song_vectors) {
 		similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
 	}
 	similar.sort( function(a, b){ return b[0] - a[0]; } );
-	console.log("similar:", similar);
 	return similar;
 }
 
@@ -167,7 +166,6 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	var item = $('<a>');
 	item.css({borderBottom : '1px solid #d2d2d2'});
 	item.addClass('row-fluid');
-	column.append(item);
 	
 	var remove = $('<a>');
 	remove.attr('href', '#');
@@ -197,6 +195,9 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 		title.click(function(){ $('#'+MUSICKA.Properties.YTPLAYER)[0].loadVideoById(videoID); });
 		details.append(title);
 	}, videoID);
+	
+	item = $('<li>').append(item);
+	column.append(item);
 }
 
 sysrecommender.get_yt_info = function(cb, videoID) {
