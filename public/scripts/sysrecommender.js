@@ -118,7 +118,7 @@ sysrecommender.do_recommendation = function () {
 			// random version
 			//this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
 			var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
-			this.recommendations[i*this.topN_songs+j] = similar[j];
+			this.recommendations[i*this.topN_songs+j] = similar[j][1];
 		}
 	}
 	this.end_recommendation();
