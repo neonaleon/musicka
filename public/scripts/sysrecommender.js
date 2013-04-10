@@ -16,7 +16,7 @@ var sysrecommender = {
 	friend_playlists: {}, // { userID : [ songIDs ] }
 	friend_song_vectors: {}, // { friendID : { songID : songVector } } }
 	
-	recommend_interval: 5000, // update recommendations every 30 seconds
+	recommend_interval: 60000, // update recommendations every 30 seconds
 
 	topN_friends: 5,
 	topN_songs: 1, // show 1 song in topN users' playlist
