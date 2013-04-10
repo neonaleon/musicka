@@ -19,7 +19,7 @@ var sysrecommender = {
 	recommend_interval: 5000, // update recommendations every 30 seconds
 
 	topN_friends: 5,
-	topN_songs: 1, // randomly show 1 song in topN users' playlist
+	topN_songs: 1, // show 1 song in topN users' playlist
 	
 	toRetrieve: 0,
 	retrieved: 0,
@@ -114,16 +114,17 @@ sysrecommender.do_recommendation = function () {
 	for (var i in this.friend_similarity) {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
+		var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
 		for (var j = 0; j < this.topN_songs; j++) {
-			// random version
-			//this.recommendations[ i * this.topN_songs + j ] = this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
-			var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
 			if (similar.length == 0) continue;
-			this.recommendations[i*this.topN_songs+j] = similar[j][1];
-			console.log(similar);
+			this.recommendations[ i * this.topN_songs + j ] = similar[j][1];
 		}
 	}
 	this.end_recommendation();
+}
+
+sysrecommender.random_songs = function (friend_id) {
+	return this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
 }
 
 sysrecommender.top_similar_songs = function (song_vectors) {
@@ -269,8 +270,10 @@ sysrecommender.get_friend_playlist = function (id) {
 			console.log("getlist res: ", response);
 			sysrecommender.friend_playlists[id] = response.playlist;
 			sysrecommender.friend_song_vectors[id] = response.vectors;
-			if (sysrecommender.retrieved == sysrecommender.toRetrieve)
+			if (sysrecommender.retrieved == sysrecommender.toRetrieve) {
+				console.log(sysrecommender.friend_song_vectors);
 				sysrecommender.do_recommendation();
+			}
 		},
 	});
 }
