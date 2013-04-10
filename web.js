@@ -291,17 +291,28 @@ function handle_recommend_getlist_friend(req, res) {
 	var playlist = [];
 	query.on('row', function(row) {
 		playlist.push( row.song );
-		console.log(row.song, "SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
-		var q = client.query("SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
+		//console.log(row.song, "SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
+		var q = 
 		q.on('row', function(r) {
 			response_obj.vectors[r.id] = r.vector;
 		});
 	});
 	query.on('end', function(result) {
 		response_obj.playlist = playlist;
-		res.json(response_obj);
 	});
-	
+	var q = "SELECT id, vector FROM playlist_vectors WHERE id IN ('" + playlist[0] + "'";
+	for(var i = 1; i < playlist.length; i++) {
+		q += ",'" + playlist[i] + "'";
+	}
+	q += ")";
+	var query2 = client.query(q);
+	query2.on('row', function(row) {
+		response_object.vectors[row.id] = row.vector;
+	});
+	query2.on('end', function(result) {
+		console.log(response_object);
+		res.json(response_object);
+	});
 }
 
 function handle_store_song_vector(req, res) {
