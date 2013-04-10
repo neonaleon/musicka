@@ -184,8 +184,18 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	var details = $('<div>').addClass('span8');
 	item.append(details);
 	
-	var rowControls = $('<div>').append(remove);
+	var add = $('<a>');
+	add.attr('href', '#');
+	add.attr('rel', 'tooltip');
+	add.attr('data-original-title', 'Add to playlist');
+	add.tooltip({ placement:'right' });
+	add.append($('<i class=\"icon-plus-sign\">'));
+	add.click(function (){ item.remove(); sysrecommender.model.addSong(videoID); });
+	
+	var rowControls = $('<div>');
 	rowControls.addClass('pull-right');
+	rowControls.append(add);
+	rowControls.append(remove);
 	details.append(rowControls);
 	
 	this.get_yt_info(function(data) {

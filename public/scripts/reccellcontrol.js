@@ -25,8 +25,18 @@ RecCellControl.prototype._initUI = function() {
 	remove.append($('<i class=\"icon-remove-sign\">'));
 	remove.click({ cell: this }, this._parent.onRemoveSong.bind(this._parent));
 	
-	var rowControls = $('<div>').append(remove);
+	var add = $('<a>');
+	add.attr('href', '#');
+	add.attr('rel', 'tooltip');
+	add.attr('data-original-title', 'Add to playlist');
+	add.tooltip({ placement:'right' });
+	add.append($('<i class=\"icon-plus-sign\">'));
+	add.click({ cell: this }, this._parent.onAddSong.bind(this._parent));
+	
+	var rowControls = $('<div>');
 	rowControls.addClass('pull-right');
+	rowControls.append(add);
+	rowControls.append(remove);
 	details.append(rowControls);
 	
 	var self = this;
