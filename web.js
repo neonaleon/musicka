@@ -286,11 +286,12 @@ function handle_recommend_retrieve_friends(req, res) {
 function handle_recommend_getlist_friend(req, res) {
 	/* retrieves list of songs from a friend's playlist */
 	var query = client.query("SELECT song FROM user_playlist WHERE id = '" + req.body.id + "'");
+	
 	var response_obj = { vectors: {}, };
 	var playlist = [];
 	query.on('row', function(row) {
 		playlist.push( row.song );
-		var q = client.query("SELECT vector FROM song_vectors WHERE id = '" + row.song + "'");
+		var q = client.query("SELECT id, vector FROM song_vectors WHERE id = '" + row.song + "'");
 		q.on('row', function(r) {
 			response_obj.vectors[r.id] = r.vector;
 		});
@@ -299,6 +300,7 @@ function handle_recommend_getlist_friend(req, res) {
 		response_obj.playlist = playlist;
 		res.json(response_obj);
 	});
+	
 }
 
 function handle_store_song_vector(req, res) {
