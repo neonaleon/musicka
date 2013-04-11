@@ -234,7 +234,7 @@ ClientControl.prototype._onRateSong = function(videoID, rate) {
 
 ClientControl.prototype._decRating = function(videoID) {
 	var self = this;
-	var rate = self._model._song(id).rating - 1;
+	var rate = self._model._song(videoID).rating - 1;
 	$.ajax({
 		type : 'post',
 		url : "rate",

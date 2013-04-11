@@ -119,13 +119,26 @@ sysrecommender.do_recommendation = function () {
 		for (var j = 0; j < this.topN_songs; j++) {
 			if (similar.length == 0) break;
 			this.recommendations[ i * this.topN_songs + j ] = similar[j][1];
-			if (Math.random() < j/10) {
+			if (Math.random() < j/10) { // some random chance to replace with a random song from playlist
 				var random = this.random_song(friend_id);
 				this.recommendations[ i * this.topN_songs + j ] = random;
 			}
 		}
 	}
+	this.sort_rating(this.recommendations);
 	this.end_recommendation();
+}
+
+sysrecommender.sort_rating = function (recom_list) {
+	var list = [];
+	for (var i in recom_list) {
+		var id = recom_list[i];
+		list.push( [ this.model._song(id).rating, id ] );
+	}
+	list.sort( function(a, b){ return b[0] - a[0]; } );
+	for (var j in recom_list) {
+		recom_list[j] = list[j][1];
+	}
 }
 
 sysrecommender.random_song = function (friend_id) {
@@ -201,7 +214,8 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	add.append($('<i class=\"icon-plus-sign\">'));
 	add.click(function (){ 
 		item.remove();
-		sysrecommender.control._addSongModelView(videoID); 
+		sysrecommender.control._addSongModelView(videoID);
+		sysrecommender.update_recommendation(); 
 	});
 	
 	var rowControls = $('<div>');
