@@ -232,19 +232,6 @@ ClientControl.prototype._onRateSong = function(videoID, rate) {
 	});
 }
 
-ClientControl.prototype._decRating = function(videoID) {
-	var self = this;
-	var rate = self._model._song(videoID).rating - 1;
-	$.ajax({
-		type : 'post',
-		url : "rate",
-		data : {video: videoID, sr: session.signed, rate: rate},
-		success: function () {
-			self._model.rateSong(videoID, rate);
-		},
-	});
-}
-
 ClientControl.prototype._parseURL = function(url) {
     var regExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
     var match = url.match(regExp);
