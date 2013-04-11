@@ -3,6 +3,7 @@
  */
 
 var sysrecommender = {
+	control: undefined,
 	model: undefined,
 	playlist_vector: undefined,
 	norm_playlist_vector: undefined,
@@ -19,7 +20,7 @@ var sysrecommender = {
 	recommend_interval: 10000, // update recommendations every 30 seconds
 
 	topN_friends: 5,
-	topN_songs: 1, // show 1 song in topN users' playlist
+	topN_songs: 3,
 	
 	toRetrieve: 0,
 	retrieved: 0,
@@ -29,7 +30,8 @@ var sysrecommender = {
 	recommendations: [],
 }
 
-sysrecommender.init = function (model) {
+sysrecommender.init = function (control, model) {
+	this.control = control;
 	this.model = model;
 	this.build_playlist_vector();
 	
@@ -115,14 +117,18 @@ sysrecommender.do_recommendation = function () {
 		var friend_id = this.friend_similarity[i][1];
 		var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
 		for (var j = 0; j < this.topN_songs; j++) {
-			if (similar.length == 0) continue;
+			if (similar.length == 0) break;
 			this.recommendations[ i * this.topN_songs + j ] = similar[j][1];
+			if (Math.random() < j/10) {
+				var random = this.random_song(friend_id);
+				this.recommendations[ i * this.topN_songs + j ] = random;
+			}
 		}
 	}
 	this.end_recommendation();
 }
 
-sysrecommender.random_songs = function (friend_id) {
+sysrecommender.random_song = function (friend_id) {
 	return this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
 }
 
@@ -173,7 +179,10 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	remove.attr('data-original-title', 'Remove');
 	remove.tooltip({ placement:'left' });
 	remove.append($('<i class=\"icon-remove-sign\">'));
-	remove.click(function() { item.remove(); });
+	remove.click(function() {
+		item.remove();
+		sysrecommender.control._decRating(videoID);
+	});
 	
 	var videoImg = new Image();
 	videoImg.src = MUSICKA.Properties.YT_THUMBNAIL_PATH + videoID + '/1.jpg';
@@ -188,9 +197,12 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	add.attr('href', '#');
 	add.attr('rel', 'tooltip');
 	add.attr('data-original-title', 'Add to playlist');
-	add.tooltip({ placement:'right' });
+	add.tooltip({ placement:'left' });
 	add.append($('<i class=\"icon-plus-sign\">'));
-	add.click(function (){ item.remove(); sysrecommender.model.addSong(videoID); });
+	add.click(function (){ 
+		item.remove();
+		sysrecommender.control._addSongModelView(videoID); 
+	});
 	
 	var rowControls = $('<div>');
 	rowControls.addClass('pull-right');
