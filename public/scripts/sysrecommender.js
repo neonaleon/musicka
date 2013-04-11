@@ -28,6 +28,7 @@ var sysrecommender = {
 	focused: true,
 	
 	recommendations: [],
+	eval_recommendations: {},
 }
 
 sysrecommender.init = function (control, model) {
@@ -115,37 +116,35 @@ sysrecommender.do_recommendation = function () {
 	for (var i in this.friend_similarity) {
 		if (i >= this.topN_friends) break;
 		var friend_id = this.friend_similarity[i][1];
-		var similar = this.top_similar_songs(this.friend_song_vectors[friend_id]);
+		var similar = this.similar_songs(this.friend_song_vectors[friend_id]);
+		var rated_similar = this.sort_rating(similar);
 		for (var j = 0; j < this.topN_songs; j++) {
-			if (similar.length == 0) break;
-			this.recommendations[ i * this.topN_songs + j ] = similar[j][1];
+			this.recommendations[ i * this.topN_songs + j ] = rated_similar[j][1];
 			if (Math.random() < j/10) { // some random chance to replace with a random song from playlist
 				var random = this.random_song(friend_id);
 				this.recommendations[ i * this.topN_songs + j ] = random;
 			}
 		}
 	}
-	this.sort_rating(this.recommendations);
 	this.end_recommendation();
 }
 
-sysrecommender.sort_rating = function (recom_list) {
+sysrecommender.sort_rating = function (in_list) {
 	var list = [];
-	for (var i in recom_list) {
-		var id = recom_list[i];
-		list.push( [ this.model._song(id).rating, id ] );
+	for (var i in in_list) {
+		var id = in_list[i][1];
+		var e = this.sysrecommender.eval_recommendations[id] || 0;
+		list.push( [ e, id ] );
 	}
 	list.sort( function(a, b){ return b[0] - a[0]; } );
-	for (var j in recom_list) {
-		recom_list[j] = list[j][1];
-	}
+	return list;
 }
 
 sysrecommender.random_song = function (friend_id) {
 	return this.friend_playlists[friend_id][Math.floor(Math.random() * this.friend_playlists[friend_id].length)];
 }
 
-sysrecommender.top_similar_songs = function (song_vectors) {
+sysrecommender.similar_songs = function (song_vectors) {
 	console.log("song_vectors: ", song_vectors);
 	var similar = [];
 	for (var k in song_vectors) {
@@ -194,7 +193,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	remove.append($('<i class=\"icon-remove-sign\">'));
 	remove.click(function() {
 		item.remove();
-		sysrecommender.control._decRating(videoID);
+		sysrecommender.eval_recommendations[videoID] -= 1;
 	});
 	
 	var videoImg = new Image();
