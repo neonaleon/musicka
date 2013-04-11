@@ -133,7 +133,8 @@ sysrecommender.sort_rating = function (in_list) {
 	var list = [];
 	for (var i in in_list) {
 		var id = in_list[i][1];
-		var e = this.sysrecommender.eval_recommendations[id] || 0;
+		if (this.eval_recommendations[id] == undefined) this.eval_recommendations[id] = 0;
+		var e = this.eval_recommendations[id]; 
 		list.push( [ e, id ] );
 	}
 	list.sort( function(a, b){ return b[0] - a[0]; } );
