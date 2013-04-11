@@ -17,10 +17,10 @@ var sysrecommender = {
 	friend_playlists: {}, // { userID : [ songIDs ] }
 	friend_song_vectors: {}, // { friendID : { songID : songVector } } }
 	
-	recommend_interval: 10000, // update recommendations every 30 seconds
+	recommend_interval: 120000, // update recommendations every 2 mins
 
 	topN_friends: 5,
-	topN_songs: 3,
+	topN_songs: 2,
 	
 	toRetrieve: 0,
 	retrieved: 0,
@@ -195,6 +195,7 @@ sysrecommender.make_recommendation_item = function(div, videoID) {
 	remove.click(function() {
 		item.remove();
 		sysrecommender.eval_recommendations[videoID] -= 1;
+		sysrecommender.update_recommendation();
 	});
 	
 	var videoImg = new Image();
