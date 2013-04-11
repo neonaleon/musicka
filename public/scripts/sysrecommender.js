@@ -282,7 +282,6 @@ sysrecommender.get_friend_playlist = function (id) {
 			sysrecommender.friend_playlists[id] = response.playlist;
 			sysrecommender.friend_song_vectors[id] = response.vectors;
 			if (sysrecommender.retrieved == sysrecommender.toRetrieve) {
-				console.log(sysrecommender.friend_song_vectors);
 				sysrecommender.do_recommendation();
 			}
 		},

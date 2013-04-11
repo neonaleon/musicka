@@ -90,8 +90,8 @@ ClientControl.prototype.init = function() {
 	//$('#playListDiv').css('height', document.body.offsetHeight*0.5);
     //$('#recommendListDiv').css('height', document.body.offsetHeight*0.5);
     var h = $('#'+MUSICKA.Properties.YTPLAYER).css('height');
-   	$('#'+MUSICKA.Element.RECOM_LIST_ID+'Div').css('height', 230);
-    $('#'+MUSICKA.Element.SYSRECOM_LIST_ID+'Div').css('height', 230);
+   	$('#'+MUSICKA.Element.RECOM_LIST_ID+'Div').css('height', 200);
+    $('#'+MUSICKA.Element.SYSRECOM_LIST_ID+'Div').css('height', 200);
     $('#'+MUSICKA.Element.PLAYLIST_ID+'Div').css('height', h);
 
 	// Retrieve playlist from server
