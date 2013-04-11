@@ -64,7 +64,10 @@ function login() {
 	FB.login(function(response) {
 		if (response.authResponse) {
 			// connected
-			session.userID = response.authResponse.userID;
+			session.userID	= response.authResponse.userID;
+			session.token	= response.authResponse.accessToken;
+			session.signed	= response.authResponse.signedRequest;
+			
 			if(clientController) {
 				clientController.init();
 			}
