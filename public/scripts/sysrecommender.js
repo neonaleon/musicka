@@ -12,6 +12,7 @@ var sysrecommender = {
 	acoustic_attributes: ['danceability', 'energy', 'speechiness'],
 	num_acoustic_attributes: 3,
 	num_equivalence_classes: 10,
+	weight_vector: [0.35, 0.55, 0.1];
 	
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlists: {}, // { userID : [ songIDs ] }
@@ -153,10 +154,19 @@ sysrecommender.similar_songs = function (song_vectors) {
 	console.log("song_vectors: ", song_vectors);
 	var similar = [];
 	for (var k in song_vectors) {
-		similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
+		//similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
+		similar.push( this.score_song(this.norm_playlist_vector, song_vectors[k]), k);
 	}
 	similar.sort( function(a, b){ return b[0] - a[0]; } );
 	return similar;
+}
+
+sysrecommender.score_song = function (vec, song_vec) {
+	var score = 0.0;
+	for (var i in vec.elements) {
+		score += song_vec.elements[i] * this.weight_vector[ i/10 ];
+	}
+	return score;
 }
 
 sysrecommender.end_recommendation = function () {
