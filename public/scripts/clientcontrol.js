@@ -269,7 +269,6 @@ ClientControl.prototype._getMyPlaylist = function() {
 
 ClientControl.prototype._onInitLoad = function () {
 	sysrecommender.init(this, this._model);
-	sysrecommender.recommend();
 }
 
 ClientControl.prototype._onPlaySong = function(id) {

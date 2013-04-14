@@ -36,6 +36,7 @@ sysrecommender.init = function (control, model) {
 	this.control = control;
 	this.model = model;
 	this.build_playlist_vector();
+	setTimeout(function() { sysrecommender.recommend() }, 20000); // buy some time for playlist vectors to be built
 	
 	$(window).bind('focus', function() { console.log('focused', sysrecommender.focused); sysrecommender.focused = true; }); 
 	$(window).bind('blur', function() { console.log('focused', sysrecommender.focused); sysrecommender.focused = false; });
@@ -120,7 +121,7 @@ sysrecommender.do_recommendation = function () {
 		var similar = this.similar_songs(this.friend_song_vectors[friend_id]);
 		var rated_similar = this.sort_rating(similar);
 		console.log("recom results for: ", friend_id, this.friend_similarity[i][0]);
-		console.log("user playlist vec: ", this.playlist_vector.elements);
+		console.log("user playlist vec:", this.playlist_vector.elements);
 		for (var x in similar) {
 			console.log("song score:       ", this.friend_song_vectors[friend_id][similar[x][1]], similar[x][0]);
 		}
