@@ -164,8 +164,8 @@ sysrecommender.similar_songs = function (song_vectors) {
 sysrecommender.score_song = function (vec, song_vec) {
 	var score = 0.0;
 	for (var i in vec.elements) {
-		console.log(vec.elements[i], song_vec[i], Math.round(i/10), this.weight_vector[ Math.round(i/10) ]);
-		score += vec.elements[i] * song_vec[i] * this.weight_vector[ Math.round(i/10) ];
+		console.log(vec.elements[i], song_vec[i], Math.floor(i/10), this.weight_vector[ Math.floor(i/10) ]);
+		score += vec.elements[i] * song_vec[i] * this.weight_vector[ Math.floor(i/10) ];
 	}
 	return score;
 }
