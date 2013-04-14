@@ -121,7 +121,7 @@ sysrecommender.do_recommendation = function () {
 		var rated_similar = this.sort_rating(similar);
 		console.log("recom results for: ", friend_id, this.friend_similarity[i][0]);
 		for (var x in rated_similar) {
-			console.log("song score: ", rated_similar[x][0], rated_similar[x][1]);
+			console.log("song score: ", similar[x][0], similar[x][1]);
 		}
 		for (var j = 0; j < this.topN_songs; j++) {
 			this.recommendations[ i * this.topN_songs + j ] = rated_similar[j][1];
@@ -164,7 +164,7 @@ sysrecommender.similar_songs = function (song_vectors) {
 sysrecommender.score_song = function (vec, song_vec) {
 	var score = 0.0;
 	for (var i in vec.elements) {
-		score += song_vec.elements[i] * this.weight_vector[ i/10 ];
+		score += vec.elements[i] * song_vec[i] * this.weight_vector[ i/10 ];
 	}
 	return score;
 }
