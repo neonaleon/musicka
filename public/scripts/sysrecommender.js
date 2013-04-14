@@ -118,6 +118,10 @@ sysrecommender.do_recommendation = function () {
 		var friend_id = this.friend_similarity[i][1];
 		var similar = this.similar_songs(this.friend_song_vectors[friend_id]);
 		var rated_similar = this.sort_rating(similar);
+		console.log("recom results for: ", friend_id, this.friend_similarity[i][0]);
+		for (var x in rated_similar) {
+			console.log("song score: ", rated_similar[x][0], rated_similar[x][1]);
+		}
 		for (var j = 0; j < this.topN_songs; j++) {
 			this.recommendations[ i * this.topN_songs + j ] = rated_similar[j][1];
 			if (Math.random() < j/10) { // some random chance to replace with a random song from playlist
