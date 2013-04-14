@@ -120,7 +120,7 @@ sysrecommender.do_recommendation = function () {
 		var similar = this.similar_songs(this.friend_song_vectors[friend_id]);
 		var rated_similar = this.sort_rating(similar);
 		console.log("recom results for: ", friend_id, this.friend_similarity[i][0]);
-		for (var x in rated_similar) {
+		for (var x in similar) {
 			console.log("song score: ", similar[x][0], similar[x][1]);
 		}
 		for (var j = 0; j < this.topN_songs; j++) {
@@ -155,7 +155,7 @@ sysrecommender.similar_songs = function (song_vectors) {
 	var similar = [];
 	for (var k in song_vectors) {
 		//similar.push( [ this.cosine_similarity( song_vectors[k] ), k ] );
-		similar.push( this.score_song(this.norm_playlist_vector, song_vectors[k]), k);
+		similar.push( [ this.score_song(this.norm_playlist_vector, song_vectors[k]), k ] );
 	}
 	similar.sort( function(a, b){ return b[0] - a[0]; } );
 	return similar;
@@ -164,7 +164,8 @@ sysrecommender.similar_songs = function (song_vectors) {
 sysrecommender.score_song = function (vec, song_vec) {
 	var score = 0.0;
 	for (var i in vec.elements) {
-		score += vec.elements[i] * song_vec[i] * this.weight_vector[ i/10 ];
+		console.log(vec.elements[i], song_vec[i], Math.round(i/10), this.weight_vector[ Math.round(i/10) ]);
+		score += vec.elements[i] * song_vec[i] * this.weight_vector[ Math.round(i/10) ];
 	}
 	return score;
 }
