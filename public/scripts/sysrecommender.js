@@ -12,7 +12,7 @@ var sysrecommender = {
 	acoustic_attributes: ['danceability', 'energy', 'speechiness'],
 	num_acoustic_attributes: 3,
 	num_equivalence_classes: 10,
-	weight_vector: [0.35, 0.55, 0.1];
+	weight_vector: [0.35, 0.55, 0.1],
 	
 	friend_similarity: [], // [(cosine similarity, userID)]
 	friend_playlists: {}, // { userID : [ songIDs ] }
