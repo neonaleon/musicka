@@ -36,7 +36,7 @@ sysrecommender.init = function (control, model) {
 	this.control = control;
 	this.model = model;
 	this.build_playlist_vector();
-	setTimeout(function() { sysrecommender.recommend() }, 20000); // buy some time for playlist vectors to be built
+	setTimeout(function() { sysrecommender.recommend() }, 15000); // buy some time for playlist vectors to be built
 	
 	$(window).bind('focus', function() { console.log('focused', sysrecommender.focused); sysrecommender.focused = true; }); 
 	$(window).bind('blur', function() { console.log('focused', sysrecommender.focused); sysrecommender.focused = false; });
